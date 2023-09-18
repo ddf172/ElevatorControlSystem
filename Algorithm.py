@@ -1,6 +1,9 @@
 import random
 import copy
+import time
 from Objects import *
+import concurrent.futures
+import multiprocessing
 
 
 class Algorithm:
@@ -16,7 +19,7 @@ class Algorithm:
     journey_time = -1
 
     # Algorith configuration
-    population_size = 100
+    population_size = 400
     generations = 50
     mutation_rate = 50  # 0 - 1000
     mutation_amount = 2
@@ -112,7 +115,6 @@ class Algorithm:
         for member in self.population:
             people_copy = copy.deepcopy(self.people)
             member.fitness = 0
-
             elevators_copy = copy.deepcopy(member.elevators)
             for index in range(self.path_length):
                 for elevator in member.elevators:
@@ -162,12 +164,10 @@ class Algorithm:
                         people_entering_elevator = sorted(people_entering_elevator, reverse=True)
                         for person_index in people_entering_elevator:
                             people_copy.pop(person_index)
-
                 member.fitness += len(people_copy) * self.waiting_time
 
             for elevator in member.elevators:
                 member.fitness += elevator.fitness
-
             member.elevators = elevators_copy
 
     def save_best_member(self):
@@ -186,11 +186,14 @@ class Algorithm:
         iterations = self.generations
         while iterations > 0:
             iterations -= 1
+            start = time.time()
             self.crossover_population()
             self.mutate_population()
             self.validate_population()
             self.evaluate_population()
             self.select_population()
             self.save_best_member()
+            end = time.time()
+            print(end - start, "one interation time, iterations left:", iterations)
 
         return self.best_member

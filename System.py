@@ -37,6 +37,7 @@ class System:
     def make_path(self):
         algorithm = Algorithm(self.elevators, self.people, self.floor_number)
         best_member = algorithm.run_algorithm()
+        print(best_member.fitness)
         for index, elevator in enumerate(best_member.elevators):
             self.elevators[index].path = elevator.path
 
@@ -45,7 +46,6 @@ class System:
             if not elevator.path:
                 self.make_path()
                 break
-
         for elevator in self.elevators:
             move = elevator.path[0]
             if move == 1:
@@ -79,7 +79,6 @@ class System:
             elevator.path.pop(0)
 
     def run_system(self):
-        print(1)
         while self.runtime > 0:
             self.runtime -= 1
             self.make_move()
