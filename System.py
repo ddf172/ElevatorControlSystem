@@ -3,9 +3,11 @@ from Algorithm import *
 
 class System:
     # Configuration
-    new_person_in_moves = 0
+    # 0 - never
+    new_person_in_moves = 1
     how_many_people_at_once = 0
-    runtime = 10
+    how_often_generate_new_path = 0
+    runtime = 100
 
     def __init__(self, people=None, elevators=None, floor_number=10):
         if people is None:
@@ -37,7 +39,6 @@ class System:
     def make_path(self):
         algorithm = Algorithm(self.elevators, self.people, self.floor_number)
         best_member = algorithm.run_algorithm()
-        print(best_member.fitness)
         for index, elevator in enumerate(best_member.elevators):
             self.elevators[index].path = elevator.path
 
@@ -79,6 +80,30 @@ class System:
             elevator.path.pop(0)
 
     def run_system(self):
+        when_to_add_person = 0
+        when_to_generate_path = 0
+        made_path = False
         while self.runtime > 0:
             self.runtime -= 1
             self.make_move()
+
+            # adding people in real time
+            when_to_add_person += 1
+            if when_to_add_person == self.new_person_in_moves:
+                for i in range(self.how_many_people_at_once):
+                    self.add_person()
+
+                self.make_path()
+                made_path = True
+
+                when_to_add_person = 0
+
+            # creating new path
+            when_to_generate_path += 1
+            if not made_path and when_to_generate_path == self.how_often_generate_new_path:
+                self.make_path()
+                when_to_generate_path = 0
+
+
+
+
