@@ -1,12 +1,11 @@
 from Algorithm import *
 
-
 class System:
     # Configuration
     # 0 - never
-    new_person_in_moves = 1
-    how_many_people_at_once = 0
-    how_often_generate_new_path = 0
+    new_person_in_moves = 4
+    how_many_people_at_once = 1
+    how_often_generate_new_path = 5
     runtime = 100
 
     def __init__(self, people=None, elevators=None, floor_number=10):
@@ -82,7 +81,6 @@ class System:
     def run_system(self):
         when_to_add_person = 0
         when_to_generate_path = 0
-        made_path = False
         while self.runtime > 0:
             self.runtime -= 1
             self.make_move()
@@ -94,13 +92,12 @@ class System:
                     self.add_person()
 
                 self.make_path()
-                made_path = True
-
+                when_to_generate_path = 0
                 when_to_add_person = 0
 
             # creating new path
             when_to_generate_path += 1
-            if not made_path and when_to_generate_path == self.how_often_generate_new_path:
+            if when_to_generate_path == self.how_often_generate_new_path:
                 self.make_path()
                 when_to_generate_path = 0
 

@@ -12,8 +12,8 @@ class Person:
     person_id = 0
 
     def __init__(self, start_pos, destination):
-        self.id = self.person_id
-        self.person_id += 1
+        self.id = Person.person_id
+        Person.person_id += 1
         self.start_pos = start_pos
         self.destination = destination
 

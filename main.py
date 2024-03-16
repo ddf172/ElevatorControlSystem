@@ -1,4 +1,6 @@
 from System import *
+from Gui import Application
+import tkinter as tk
 
 elevators_data = [
     Elevator(position=0, capacity=5),
@@ -20,6 +22,17 @@ people_data = [
     Person(start_pos=2, destination=1),
     Person(start_pos=6, destination=3),
 ]
-if __name__ == "__main__":
+
+
+# def main():
+#   system = System(people_data, elevators_data, 10)
+#   system.run_system()
+
+def main():
     system = System(people_data, elevators_data, 10)
-    system.run_system()
+    root = tk.Tk()
+    app = Application(master=root, system=system)
+    app.mainloop()
+
+if __name__ == "__main__":
+    main()

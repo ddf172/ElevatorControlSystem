@@ -2,8 +2,6 @@ import random
 import copy
 import time
 from Objects import *
-import concurrent.futures
-import multiprocessing
 
 
 class Algorithm:
@@ -19,7 +17,7 @@ class Algorithm:
     journey_time = -1
 
     # Algorith configuration
-    population_size = 400
+    population_size = 200
     generations = 50
     mutation_rate = 50  # 0 - 1000
     mutation_amount = 2
@@ -30,7 +28,7 @@ class Algorithm:
         self.people = people
         self.floor_number = floor_number
         self.population = []
-        self.best_member = None
+        self.best_member = Member()
 
     def generate_population(self):
         for i in range(self.population_size):
@@ -172,7 +170,7 @@ class Algorithm:
 
     def save_best_member(self):
         if self.best_member is None or self.best_member.fitness < self.population[0].fitness:
-            self.best_member = self.population[0]
+            self.best_member = copy.deepcopy(self.population[0])
 
     def mutate_population(self):
         for member in self.population:
@@ -194,6 +192,6 @@ class Algorithm:
             self.select_population()
             self.save_best_member()
             end = time.time()
-            print(end - start, "one interation time, iterations left:", iterations)
+            # print(end - start, "one interation time, iterations left:", iterations, "best fitness: ", self.best_member.fitness)
 
         return self.best_member
