@@ -1,6 +1,8 @@
 from Algorithm import *
+from Singleton import Singleton
 
-class System:
+
+class System(Singleton):
     # Configuration
     # 0 - never
     new_person_in_moves = 4
@@ -9,6 +11,9 @@ class System:
     runtime = 100
 
     def __init__(self, people=None, elevators=None, floor_number=10):
+        if hasattr(self, 'initialized'): return
+        self.initialized = True
+        
         if people is None:
             people = []
         if elevators is None:

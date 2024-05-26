@@ -2,9 +2,10 @@ import random
 import copy
 import time
 from Objects import *
+from Singleton import Singleton
 
 
-class Algorithm:
+class Algorithm(Singleton):
     # Fitness
     move_penalty = -1
     door_movement = -1
@@ -16,7 +17,7 @@ class Algorithm:
     waiting_time = -2
     journey_time = -1
 
-    # Algorith configuration
+    # Algorithm configuration
     population_size = 200
     generations = 50
     mutation_rate = 50  # 0 - 1000
@@ -24,6 +25,9 @@ class Algorithm:
     path_length = 10
 
     def __init__(self, elevators, people, floor_number):
+        if hasattr(self, 'initialized'): return
+        self.initialized = True
+
         self.elevators = elevators
         self.people = people
         self.floor_number = floor_number
