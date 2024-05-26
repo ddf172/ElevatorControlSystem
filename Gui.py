@@ -2,6 +2,7 @@ import tkinter as tk
 from System import System
 
 class Application(tk.Frame):
+    
     def __init__(self, master=None, system=None):
         super().__init__(master)
         self.master = master
