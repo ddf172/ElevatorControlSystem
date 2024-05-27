@@ -34,17 +34,28 @@ class Algorithm(Singleton):
         self.population = []
         self.best_member = Member()
 
+    @staticmethod
+    def create_elevator_copy(original_elevator):
+        position = original_elevator.get_position()
+        capacity = original_elevator.get_capacity()
+        last_move = original_elevator.get_last_move()
+        elevator = Elevator(position, capacity, last_move)
+
+        people = original_elevator.get_people()
+        elevator.set_people(copy.deepcopy(people))
+        return elevator
+
     def generate_population(self):
         for i in range(self.population_size):
             member = Member()
             for j in range(len(self.elevators)):
-                elevator = Elevator(self.elevators[j].position, self.elevators[j].capacity)
-                elevator.last_move = self.elevators[j].last_move
-                elevator.people = copy.deepcopy(self.elevators[j].people)
-                for k in range(self.path_length):
-                    move = random.randint(-1, 2)
-                    elevator.path.append(move)
-                member.elevators.append(elevator)
+                original_elevator = self.elevators[j]
+                member_elevator = self.create_elevator_copy(original_elevator)
+                # Tabu
+                # for k in range(self.path_length):
+                #     move = random.randint(-1, 2)
+                #     member_elevator.path.append(move)
+                member.elevators.append(member_elevator)
             self.population.append(member)
 
     def validate_population(self):

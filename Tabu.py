@@ -3,7 +3,7 @@ import random
 
 class Tabu:
 
-    def __init__(self):
+    def __init__(self, path):
         pass
 
     def change_move(self):
