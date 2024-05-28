@@ -7,11 +7,13 @@ class Settings(Singleton):
         if hasattr(self, 'initialized'): return
         self.initialized = True
 
-        self._path_length = 10
         self._elevator_number = 3
 
         self._lowest_floor = 0
         self._highest_floor = 10
+
+        # Tabu
+        self._path_length = 10
 
     def get_path_length(self):
         return self._path_length

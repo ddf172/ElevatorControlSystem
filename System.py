@@ -54,13 +54,13 @@ class System(Singleton):
         for elevator in self.elevators:
             move = elevator.path[0]
             if move == 1:
-                elevator.position += 1
+                elevator.curr_position += 1
             elif move == -1:
-                elevator.position -= 1
+                elevator.curr_position -= 1
             elif move == 2:
                 people_to_remove = []
                 for person_index, person in enumerate(elevator.people):
-                    if person.destination == elevator.position:
+                    if person.destination == elevator.curr_position:
                         people_to_remove.append(person_index)
 
                 self.transported_people += len(people_to_remove)
@@ -73,7 +73,7 @@ class System(Singleton):
                 for person_index, person in enumerate(self.people):
                     if len(elevator.people) == elevator.capacity:
                         break
-                    if person.start_pos == elevator.position:
+                    if person.start_pos == elevator.curr_position:
                         people_entering_elevator.append(person_index)
                         elevator.people.append(person)
 
@@ -105,7 +105,3 @@ class System(Singleton):
             if when_to_generate_path == self.how_often_generate_new_path:
                 self.make_path()
                 when_to_generate_path = 0
-
-
-
-

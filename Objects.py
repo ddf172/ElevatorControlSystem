@@ -1,5 +1,6 @@
 from Settings import Settings
 from random import randint
+from copy import deepcopy
 
 
 class Elevator:
@@ -53,6 +54,11 @@ class Elevator:
 
     def get_path(self):
         return self._path
+
+    def create_elevator_deepcopy(self):
+        elevator = Elevator(self._position, self._capacity, self._last_move)
+        elevator.set_people(deepcopy(self._people))
+        return elevator
 
 
 class Person:

@@ -34,28 +34,17 @@ class Algorithm(Singleton):
         self.population = []
         self.best_member = Member()
 
-    @staticmethod
-    def create_elevator_copy(original_elevator):
-        position = original_elevator.get_position()
-        capacity = original_elevator.get_capacity()
-        last_move = original_elevator.get_last_move()
-        elevator = Elevator(position, capacity, last_move)
-
-        people = original_elevator.get_people()
-        elevator.set_people(copy.deepcopy(people))
-        return elevator
-
     def generate_population(self):
         for i in range(self.population_size):
             member = Member()
             for j in range(len(self.elevators)):
                 original_elevator = self.elevators[j]
-                member_elevator = self.create_elevator_copy(original_elevator)
+                member_elevator = original_elevator.create_elevator_deepcopy()
                 # Tabu
                 # for k in range(self.path_length):
                 #     move = random.randint(-1, 2)
                 #     member_elevator.path.append(move)
-                member.elevators.append(member_elevator)
+                member.add_elevator(member_elevator)
             self.population.append(member)
 
     def validate_population(self):
@@ -67,7 +56,7 @@ class Algorithm(Singleton):
                     1: [1, 2],
                     2: [-1, 0, 1],
                 }
-                curr_floor = elevator.position
+                curr_floor = elevator.curr_position
                 original_last_move = elevator.last_move
 
                 for i in range(self.path_length):
@@ -96,9 +85,9 @@ class Algorithm(Singleton):
                 parent1 = self.population[i].elevators[j]
                 parent2 = self.population[i + 1].elevators[j]
 
-                child1 = Elevator(parent1.position, parent1.capacity, parent1.last_move)
+                child1 = Elevator(parent1.curr_position, parent1.capacity, parent1.last_move)
                 child1.people = copy.deepcopy(parent1.people)
-                child2 = Elevator(parent2.position, parent2.capacity, parent2.last_move)
+                child2 = Elevator(parent2.curr_position, parent2.capacity, parent2.last_move)
                 child2.people = copy.deepcopy(parent2.people)
 
                 total_fitness = max(parent1.fitness, 0) + max(parent2.fitness, 0)
@@ -136,14 +125,14 @@ class Algorithm(Singleton):
                     if move == 1 or move == -1:
                         missed_count = 0
                         for person in elevator.people:
-                            if person.destination == elevator.position:
+                            if person.destination == elevator.curr_position:
                                 missed_count += 1
 
                         elevator.fitness += missed_count * self.missed_destination_floor
                         elevator.fitness += self.journey_time * len(elevator.people)
                         elevator.fitness += self.move_penalty
 
-                        elevator.position += move
+                        elevator.curr_position += move
 
                     elif move == 0:
                         elevator.fitness += self.no_move
@@ -154,7 +143,7 @@ class Algorithm(Singleton):
                         elevator.fitness += self.door_movement
                         people_to_remove = []
                         for person_index, person in enumerate(elevator.people):
-                            if person.destination == elevator.position:
+                            if person.destination == elevator.curr_position:
                                 people_to_remove.append(person_index)
 
                         people_to_remove = sorted(people_to_remove, reverse=True)
@@ -169,7 +158,7 @@ class Algorithm(Singleton):
                         for person_index, person in enumerate(people_copy):
                             if len(elevator.people) == elevator.capacity:
                                 break
-                            if person.start_pos == elevator.position:
+                            if person.start_pos == elevator.curr_position:
                                 people_entering_elevator.append(person_index)
                                 elevator.people.append(person)
                                 elevator.fitness += self.pick_up

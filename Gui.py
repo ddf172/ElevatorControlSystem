@@ -54,7 +54,7 @@ class Application(tk.Frame):
         state += "Elevators:\n"
         for i, elevator in enumerate(self.system.elevators):
             state += f"  Elevator {i + 1}:\n"
-            state += f"    Position: {elevator.position}\n"
+            state += f"    Position: {elevator.curr_position}\n"
             state += f"    People: {[person.id for person in elevator.people]}\n"
 
         state += "People waiting:\n"
@@ -78,7 +78,7 @@ class Application(tk.Frame):
         for floor in range(self.system.floor_number - 1, -1, -1):
             floor_str = ""
             for elevator in self.system.elevators:
-                if elevator.position == floor:
+                if elevator.curr_position == floor:
                     floor_str += "E"
                 else:
                     floor_str += "o"
