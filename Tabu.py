@@ -13,7 +13,7 @@ class Tabu:
         2: [-1, 0, 1],
     }
 
-    def __init__(self, path, position=0, last_move=0):
+    def __init__(self, path=None, position=0, last_move=0):
         self.settings = Settings()
         if path is None:
             path = []
