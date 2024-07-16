@@ -14,6 +14,15 @@ class Settings(Singleton):
 
         # Tabu
         self._path_length = 10
+        self.move_possibilities = [-1, 0, 1, 2]
+        self.path_possible_moves = {
+            "bottom_floor": [0, 1, 2],
+            "top_floor": [-1, 0, 2],
+            -1: [-1, 2],
+            0: [-1, 0, 1, 2],
+            1: [1, 2],
+            2: [-1, 0, 1],
+        }
 
     def get_path_length(self):
         return self._path_length

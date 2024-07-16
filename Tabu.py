@@ -1,104 +1,87 @@
 from Settings import Settings
 from random import choice
+from enum import Enum
+from typing import List, Union
+from Objects import PathState
+
+
+class Floor(Enum):
+    BOTTOM = "bottom_floor"
+    TOP = "top_floor"
 
 
 class Tabu:
-    move_possibilities = [-1, 0, 1, 2]
-    path_possible_moves = {
-        "bottom_floor": [0, 1, 2],
-        "top_floor": [-1, 0, 1],
-        -1: [-1, 2],
-        0: [-1, 0, 1, 2],
-        1: [1, 2],
-        2: [-1, 0, 1],
-    }
 
-    def __init__(self, path, position=0, last_move=0):
+    def __init__(self, path: List[int], position: int = 0, last_move: int = 0):
         self.settings = Settings()
-        if path is None:
-            path = []
-        self.path = path
-        self.original_position = position
-        self.curr_position = position
-        self.last_move_from_previous_iteration = last_move
-        self.path_length = self.settings.get_path_length()
+        self.state = PathState(path or [], position, last_move)
 
-    def get_random_valid_move(self, prev_move, curr_floor):
+    def append_move(self, move: int):
+        self.state.path.append(move)
+        if move <= 1:
+            self.state.curr_position += move
+
+    def get_proper_key(self, curr_floor: int, prev_move: int) -> Union[Floor, int]:
         if curr_floor == self.settings.get_lowest_floor():
-            possible_moves = set(self.path_possible_moves["bottom_floor"])
+            key = Floor.BOTTOM
         elif curr_floor == self.settings.get_highest_floor():
-            possible_moves = set(self.path_possible_moves["top_floor"])
+            key = Floor.TOP
         else:
-            possible_moves = set(self.path_possible_moves[prev_move])
+            key = prev_move
 
-        return choice(list(possible_moves))
+        return key
 
-    def get_valid_move(self, prev_move, move, curr_floor):
-        if curr_floor == self.settings.get_lowest_floor():
-            possible_moves = set(self.path_possible_moves["bottom_floor"])
-        elif curr_floor == self.settings.get_highest_floor():
-            possible_moves = set(self.path_possible_moves["top_floor"])
-        else:
-            possible_moves = set(self.path_possible_moves[prev_move])
+    def get_possible_moves(self, key: Union[Floor, int]) -> List[int]:
+        return self.settings.path_possible_moves.get(key)
 
-        possible_moves.discard(move)
+    def get_valid_move_list(self, prev_move: int, curr_floor: int) -> List[int]:
+        possible_moves = self.get_possible_moves(self.get_proper_key(curr_floor, prev_move))
 
         if not possible_moves:
-            raise (ValueError("No possible moves"))
+            raise ValueError(f"No valid moves for: floor={curr_floor}, prev_move={prev_move}")
 
-        return choice(list(possible_moves))
+        return possible_moves
 
-    def append_move(self, move):
-        self.path.append(move)
+    def generate_single_move(self, prev_move: int, curr_position: int) -> int:
+        if len(self.state.path) == self.settings.get_path_length():
+            raise ValueError("Path is already generated")
+        possible_moves = self.get_valid_move_list(prev_move, curr_position)
 
-    def generate_move(self):
-        if len(self.path) == self.path_length:
-            raise (ValueError("Path already generated"))
+        return choice(possible_moves)
 
-        if not self.path:
-            prev_move = self.last_move_from_previous_iteration
-        else:
-            prev_move = self.path[-1]
-        move = self.get_random_valid_move(prev_move, self.curr_position)
-        return move
-
-    def generate_path(self):
-        for i in range(self.path_length):
-            move = self.generate_move()
-            self.append_move(move)
-            if self.path[-1] <= 1:
-                self.curr_position += self.path[-1]
-
-    def change_move(self, index, move):  # Can breach the floor limits
-        if index < 0 or index >= self.path_length:
-            raise (IndexError("Index out of range"))
-        if index == 0:
-            if move not in self.path_possible_moves[self.last_move_from_previous_iteration]:
-                raise (ValueError("Tabu violation"))
-        else:
-            if move not in self.path_possible_moves[self.path[index - 1]]:
-                raise (ValueError("Tabu violation"))
-        self.path[index] = move
-
-    def validate_path(self):
-        if len(self.path) == 0 or len(self.path) != self.path_length:
-            raise (ValueError("Path not generated"))
-
-        curr_floor = self.original_position
-        for i in range(self.path_length):
-            if i == 0:
-                valid_moves = self.path_possible_moves[self.last_move_from_previous_iteration]
-                if self.path[i] not in valid_moves:
-                    self.path[i] = self.change_move(i, self.get_valid_move(self.last_move_from_previous_iteration, self.path[i], curr_floor))
-
+    def generate_new_path(self) -> List[int]:
+        self.state.path = []
+        self.state.curr_position = self.state.original_position
+        for _ in range(self.settings.get_path_length()):
+            if not self.state.path:
+                prev_move = self.state.last_move_from_prev_iteration
             else:
-                valid_moves = self.path_possible_moves[self.path[i - 1]]
-                if self.path[i] not in valid_moves:
-                    self.path[i] = self.change_move(i, self.get_valid_move(self.path[i - 1], self.path[i], curr_floor))
+                prev_move = self.state.path[-1]
+            move = self.generate_single_move(prev_move, self.state.curr_position)
 
-            if self.path[i] <= 1:
-                curr_floor += self.path[i]
-        self.curr_position = curr_floor
+            self.append_move(move)
+
+        return self.state.path
+
+    def get_repaired_move(self, prev_move: int, move: int, curr_floor: int) -> int:
+        if curr_floor <= self.settings.get_lowest_floor()-1 or curr_floor >= self.settings.get_highest_floor() + 1:
+            raise ValueError(f"Invalid floor: {curr_floor}, not possible to repair")
+
+        possible_moves = self.get_possible_moves(self.get_proper_key(curr_floor, prev_move))
+        if move in possible_moves:
+            return move
+        return choice(possible_moves)
+
+    def validate_and_repair_path(self):
+        if not self.state.path:
+            return
+        prev_move = self.state.last_move_from_prev_iteration
+        curr_floor = self.state.original_position
+        for index, move in enumerate(self.state.path):
+            self.state.path[index] = self.get_repaired_move(prev_move, move, curr_floor)
+            if self.state.path[index] <= 1:
+                curr_floor += self.state.path[index]
+            prev_move = self.state.path[index]
 
     def get_path(self):
-        return self.path
+        return self.state.path

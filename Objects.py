@@ -1,16 +1,23 @@
 from Settings import Settings
 from random import randint
 from copy import deepcopy
+from typing import List
+
+
+class PathState:
+    def __init__(self, path: List[int], position: int = 0, last_move: int = 0):
+        self.path = path
+        self.original_position = position
+        self.curr_position = position
+        self.last_move_from_prev_iteration = last_move
 
 
 class Elevator:
     def __init__(self, position, capacity, last_move=0):
+        self._state = PathState([], position, last_move)
         self._people = []
         self._fitness = 0
-        self._position = position
         self._capacity = capacity
-        self._path = []
-        self._last_move = last_move
         self._settings = Settings()
 
     def add_person(self, person):
@@ -28,10 +35,15 @@ class Elevator:
         return self._people
 
     def set_last_move(self, move):
-        self._last_move = move
+        if not self._state.path:
+            self._state.path.append(move)
+        else:
+            self._state.path[-1] = move
 
     def get_last_move(self):
-        return self._last_move
+        if not self._state.path:
+            return None
+        return self._state.path[-1]
 
     def set_fitness(self, value):
         self._fitness = value
@@ -40,11 +52,11 @@ class Elevator:
         return self._fitness
 
     def set_path_step(self, index, value):
-        if index < len(self._path):
+        if index < len(self._state.path):
             raise (IndexError("Index out of range"))
         if value not in [-1, 0, 1, 2]:
             raise (ValueError("Value not in [-1, 0, 1, 2]"))
-        self._path[index] = value
+        self._state.path[index] = value
 
     def set_path(self, path):
         if len(path) != self._settings.get_path_length():
@@ -53,10 +65,10 @@ class Elevator:
             self.set_path_step(index, value)
 
     def get_path(self):
-        return self._path
+        return self._state.path
 
     def create_elevator_deepcopy(self):
-        elevator = Elevator(self._position, self._capacity, self._last_move)
+        elevator = Elevator(self._state.curr_position, self._capacity, self.get_last_move())
         elevator.set_people(deepcopy(self._people))
         return elevator
 

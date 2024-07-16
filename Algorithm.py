@@ -3,6 +3,7 @@ import copy
 import time
 from Objects import *
 from Singleton import Singleton
+from Tabu import Tabu
 
 
 class Algorithm(Singleton):
@@ -40,10 +41,9 @@ class Algorithm(Singleton):
             for j in range(len(self.elevators)):
                 original_elevator = self.elevators[j]
                 member_elevator = original_elevator.create_elevator_deepcopy()
-                # Tabu
-                # for k in range(self.path_length):
-                #     move = random.randint(-1, 2)
-                #     member_elevator.path.append(move)
+                tabu = Tabu(original_elevator.path, original_elevator.curr_position, original_elevator.last_move)
+                tabu.generate_new_path()
+                member_elevator.path = tabu.get_path()
                 member.add_elevator(member_elevator)
             self.population.append(member)
 
