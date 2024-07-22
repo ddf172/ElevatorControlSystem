@@ -23,9 +23,9 @@ class Tabu:
 
     def get_proper_key(self, curr_floor: int, prev_move: int) -> Union[Floor, int]:
         if curr_floor == self.settings.get_lowest_floor():
-            key = Floor.BOTTOM
+            key = Floor.BOTTOM.value
         elif curr_floor == self.settings.get_highest_floor():
-            key = Floor.TOP
+            key = Floor.TOP.value
         else:
             key = prev_move
 
