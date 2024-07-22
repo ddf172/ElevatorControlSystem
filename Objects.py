@@ -14,62 +14,14 @@ class PathState:
 
 class Elevator:
     def __init__(self, position, capacity, last_move=0):
-        self._state = PathState([], position, last_move)
-        self._people = []
-        self._fitness = 0
-        self._capacity = capacity
-        self._settings = Settings()
-
-    def add_person(self, person):
-        self._people.append(person)
-
-    def remove_person(self, person):
-        return self._people.remove(person)
-
-    def set_people(self, people):
-        if len(people) > self._capacity:
-            raise (ValueError("People list exceeds capacity"))
-        self._people = people
-
-    def get_people(self):
-        return self._people
-
-    def set_last_move(self, move):
-        if not self._state.path:
-            self._state.path.append(move)
-        else:
-            self._state.path[-1] = move
-
-    def get_last_move(self):
-        if not self._state.path:
-            return None
-        return self._state.path[-1]
-
-    def set_fitness(self, value):
-        self._fitness = value
-
-    def get_fitness(self):
-        return self._fitness
-
-    def set_path_step(self, index, value):
-        if index < len(self._state.path):
-            raise (IndexError("Index out of range"))
-        if value not in [-1, 0, 1, 2]:
-            raise (ValueError("Value not in [-1, 0, 1, 2]"))
-        self._state.path[index] = value
-
-    def set_path(self, path):
-        if len(path) != self._settings.get_path_length():
-            raise (ValueError("Path length does not match"))
-        for index, value in enumerate(path):
-            self.set_path_step(index, value)
-
-    def get_path(self):
-        return self._state.path
+        self.people = []
+        self.fitness = 0
+        self.capacity = capacity
+        self.state = PathState([], position, last_move)
 
     def create_elevator_deepcopy(self):
-        elevator = Elevator(self._state.curr_position, self._capacity, self.get_last_move())
-        elevator.set_people(deepcopy(self._people))
+        elevator = Elevator(self.state.curr_position, self.capacity, self.state.last_move_from_prev_iteration)
+        elevator.people = deepcopy(self.people)
         return elevator
 
 
@@ -109,24 +61,24 @@ class Person:
 
 class Member:
     def __init__(self):
-        self._elevators = []
+        self.elevators = []
         self._fitness = 0
         self._settings = Settings()
 
     def add_elevator(self, elevator):
-        if len(self._elevators) == self._settings.get_elevator_number():
+        if len(self.elevators) == self._settings.get_elevator_number():
             raise (ValueError("Member already has 3 elevators"))
 
-        if elevator is not Elevator:
+        if type(elevator) is not Elevator:
             raise (TypeError("Object is not of type Elevator"))
-        if elevator in self._elevators:
+        if elevator in self.elevators:
             raise (ValueError("Elevator already in list"))
-        self._elevators.append(elevator)
+        self.elevators.append(elevator)
 
     def get_elevator(self, index):
-        if index < 0 or index >= len(self._elevators):
+        if index < 0 or index >= len(self.elevators):
             raise (IndexError("Index out of range"))
-        return self._elevators[index]
+        return self.elevators[index]
 
     def set_fitness(self, value):
         self._fitness = value

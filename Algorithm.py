@@ -7,23 +7,6 @@ from Tabu import Tabu
 
 
 class Algorithm(Singleton):
-    # Fitness
-    move_penalty = -1
-    door_movement = -1
-    no_move = 0
-    no_move_with_passenger = -10
-    missed_destination_floor = -100
-    drop_out = 100
-    pick_up = 10
-    waiting_time = -2
-    journey_time = -1
-
-    # Algorithm configuration
-    population_size = 200
-    generations = 50
-    mutation_rate = 50  # 0 - 1000
-    mutation_amount = 2
-    path_length = 10
 
     def __init__(self, elevators, people, floor_number):
         if hasattr(self, 'initialized'): return
@@ -34,51 +17,37 @@ class Algorithm(Singleton):
         self.floor_number = floor_number
         self.population = []
         self.best_member = Member()
+        self.settings = Settings()
+
+    def generate_member(self):
+        member = Member()
+        for elevator in self.elevators:
+            tabu = Tabu(elevator.state.path, elevator.state.curr_position, elevator.state.last_move_from_prev_iteration)
+            tabu.generate_new_path()
+
+            member_elevator = elevator.create_elevator_deepcopy()
+            member_elevator.state.path = tabu.get_path()
+            member.add_elevator(member_elevator)
+        return member
 
     def generate_population(self):
-        for i in range(self.population_size):
-            member = Member()
-            for j in range(len(self.elevators)):
-                original_elevator = self.elevators[j]
-                member_elevator = original_elevator.create_elevator_deepcopy()
-                tabu = Tabu(original_elevator.path, original_elevator.curr_position, original_elevator.last_move)
-                tabu.generate_new_path()
-                member_elevator.path = tabu.get_path()
-                member.add_elevator(member_elevator)
+        for _ in range(self.settings.population_size):
+            member = self.generate_member()
             self.population.append(member)
 
-    def validate_population(self):
+    @staticmethod
+    def validate_and_repair_member(member):
+        for elevator in member.elevators:
+            tabu = Tabu(elevator.state.path, elevator.state.curr_position, elevator.state.last_move_from_prev_iteration)
+            tabu.validate_and_repair_path()
+            elevator.state.path = tabu.get_path()
+
+    def validate_and_repair_population(self):
         for member in self.population:
-            for elevator in member.elevators:
-                possibilites = {
-                    -1: [-1, 2],
-                    0: [-1, 0, 1, 2],
-                    1: [1, 2],
-                    2: [-1, 0, 1],
-                }
-                curr_floor = elevator.curr_position
-                original_last_move = elevator.last_move
-
-                for i in range(self.path_length):
-                    if elevator.path[i] not in possibilites[elevator.last_move]:
-                        elevator.path[i] = random.choice(possibilites[elevator.last_move])
-
-                    if elevator.path[i] <= 1 and (
-                            curr_floor + elevator.path[i] < 0 or curr_floor + elevator.path[i] >= self.floor_number):
-                        if elevator.last_move == 2:
-                            elevator.path[i] *= -1
-                        else:
-                            elevator.path[i] = 2
-
-                    if elevator.path[i] <= 1:
-                        curr_floor += elevator.path[i]
-
-                    elevator.last_move = elevator.path[i]
-
-                elevator.last_move = original_last_move
+            self.validate_and_repair_member(member)
 
     def crossover_population(self):
-        for i in range(0, self.population_size, 2):
+        for i in range(0, self.settings.population_size, 2):
             new_member1 = Member()
             new_member2 = Member()
             for j in range(len(self.elevators)):
