@@ -16,7 +16,7 @@ class Tabu:
         self.settings = Settings()
         self.state = PathState(path or [], position, last_move)
 
-    def append_move(self, move: int):
+    def append_move(self, move: int) -> None:
         self.state.path.append(move)
         if move <= 1:
             self.state.curr_position += move
@@ -32,7 +32,7 @@ class Tabu:
         return key
 
     def get_possible_moves(self, key: Union[Floor, int]) -> List[int]:
-        return self.settings.path_possible_moves.get(key)
+        return self.settings.path.path_possible_moves.get(key)
 
     def get_valid_move_list(self, prev_move: int, curr_floor: int) -> List[int]:
         possible_moves = self.get_possible_moves(self.get_proper_key(curr_floor, prev_move))
@@ -72,7 +72,7 @@ class Tabu:
             return move
         return choice(possible_moves)
 
-    def validate_and_repair_path(self):
+    def validate_and_repair_path(self) -> None:
         if not self.state.path:
             return
         prev_move = self.state.last_move_from_prev_iteration
@@ -83,5 +83,5 @@ class Tabu:
                 curr_floor += self.state.path[index]
             prev_move = self.state.path[index]
 
-    def get_path(self):
+    def get_path(self) -> List[int]:
         return self.state.path

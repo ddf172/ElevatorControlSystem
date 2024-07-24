@@ -62,11 +62,11 @@ class Person:
 class Member:
     def __init__(self):
         self.elevators = []
-        self._fitness = 0
-        self._settings = Settings()
+        self.fitness = 0
+        self.settings = Settings()
 
     def add_elevator(self, elevator):
-        if len(self.elevators) == self._settings.get_elevator_number():
+        if len(self.elevators) == self.settings.get_elevator_number():
             raise (ValueError("Member already has 3 elevators"))
 
         if type(elevator) is not Elevator:
@@ -79,9 +79,3 @@ class Member:
         if index < 0 or index >= len(self.elevators):
             raise (IndexError("Index out of range"))
         return self.elevators[index]
-
-    def set_fitness(self, value):
-        self._fitness = value
-
-    def get_fitness(self):
-        return self._fitness
