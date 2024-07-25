@@ -49,14 +49,14 @@ class Tabu:
 
         return choice(possible_moves)
 
+    def get_previous_move(self) -> int:
+        return self.state.path[-1] if self.state.path else self.state.last_move_from_prev_iteration
+
     def generate_new_path(self) -> List[int]:
         self.state.path = []
         self.state.curr_position = self.state.original_position
         for _ in range(self.settings.get_path_length()):
-            if not self.state.path:
-                prev_move = self.state.last_move_from_prev_iteration
-            else:
-                prev_move = self.state.path[-1]
+            prev_move = self.get_previous_move()
             move = self.generate_single_move(prev_move, self.state.curr_position)
 
             self.append_move(move)

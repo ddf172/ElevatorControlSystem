@@ -5,6 +5,7 @@ from Objects import *
 from Singleton import Singleton
 from Tabu import Tabu
 from PathMutator import PathMutator
+from Crossover import Crossover
 
 
 class Algorithm(Singleton):
@@ -20,6 +21,7 @@ class Algorithm(Singleton):
         self.best_member = Member()
         self.settings = Settings()
         self.mutator = PathMutator()
+        self.crossover = Crossover()
 
     def generate_member(self) -> Member:
         # Divide into more functions
@@ -49,37 +51,8 @@ class Algorithm(Singleton):
         for member in self.population:
             self.validate_and_repair_member(member)
 
-    def crossover_population(self):
-        for i in range(0, self.settings.population_size, 2):
-            new_member1 = Member()
-            new_member2 = Member()
-            for j in range(len(self.elevators)):
-                parent1 = self.population[i].elevators[j]
-                parent2 = self.population[i + 1].elevators[j]
-
-                child1 = Elevator(parent1.curr_position, parent1.capacity, parent1.last_move)
-                child1.people = copy.deepcopy(parent1.people)
-                child2 = Elevator(parent2.curr_position, parent2.capacity, parent2.last_move)
-                child2.people = copy.deepcopy(parent2.people)
-
-                total_fitness = max(parent1.fitness, 0) + max(parent2.fitness, 0)
-                if total_fitness == 0:
-                    probabilities = [0.5, 0.5]
-                else:
-                    probabilities = [parent1.fitness / total_fitness, parent2.fitness / total_fitness]
-
-                for k in range(self.path_length):
-                    if parent1.path[k] == parent2.path[k]:
-                        child1.path.append(parent1.path[k])
-                        child2.path.append(parent1.path[k])
-                    else:
-                        child1.path.append(random.choices([parent1.path[k], parent2.path[k]], probabilities, k=1))
-                        child2.path.append(random.choices([parent1.path[k], parent2.path[k]], probabilities, k=1))
-                new_member1.elevators.append(child1)
-                new_member2.elevators.append(child2)
-
-            self.population.append(new_member1)
-            self.population.append(new_member2)
+    def crossover_population(self) -> None:
+        self.crossover.crossover_population(self.population)
 
     def select_population(self) -> None:
         self.population = sorted(self.population, key=lambda x: x.fitness, reverse=True)
