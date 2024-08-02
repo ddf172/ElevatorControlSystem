@@ -1,8 +1,8 @@
-from Settings import Settings
+from Settings.Settings import Settings
 from random import choice
 from enum import Enum
 from typing import List, Union
-from Objects import PathState
+from Objects.PathState import PathState
 
 
 class Floor(Enum):
@@ -19,7 +19,7 @@ class Tabu:
     def append_move(self, move: int) -> None:
         self.state.path.append(move)
         if move <= 1:
-            self.state.curr_position += move
+            self.state.position += move
 
     def get_proper_key(self, curr_floor: int, prev_move: int) -> Union[Floor, int]:
         if curr_floor == self.settings.get_lowest_floor():
@@ -54,13 +54,14 @@ class Tabu:
 
     def generate_new_path(self) -> List[int]:
         self.state.path = []
-        self.state.curr_position = self.state.original_position
+        original_position = self.state.position
         for _ in range(self.settings.get_path_length()):
             prev_move = self.get_previous_move()
-            move = self.generate_single_move(prev_move, self.state.curr_position)
+            move = self.generate_single_move(prev_move, self.state.position)
 
             self.append_move(move)
 
+        self.state.position = original_position
         return self.state.path
 
     def get_repaired_move(self, prev_move: int, move: int, curr_floor: int) -> int:
@@ -75,13 +76,15 @@ class Tabu:
     def validate_and_repair_path(self) -> None:
         if not self.state.path:
             return
+        original_position = self.state.position
         prev_move = self.state.last_move_from_prev_iteration
-        curr_floor = self.state.original_position
         for index, move in enumerate(self.state.path):
-            self.state.path[index] = self.get_repaired_move(prev_move, move, curr_floor)
+            self.state.path[index] = self.get_repaired_move(prev_move, move, self.state.position)
             if self.state.path[index] <= 1:
-                curr_floor += self.state.path[index]
+                self.state.position += self.state.path[index]
             prev_move = self.state.path[index]
+
+        self.state.position = original_position
 
     def get_path(self) -> List[int]:
         return self.state.path

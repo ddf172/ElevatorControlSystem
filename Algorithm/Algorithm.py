@@ -1,7 +1,10 @@
-import random
 import copy
 import time
-from Objects import *
+from typing import List, Dict
+from Objects.Member import Member
+from Objects.Person import Person
+from Objects.Elevator import *
+from Settings.Settings import Settings
 from Singleton import Singleton
 from Tabu import Tabu
 from PathMutator import PathMutator
@@ -10,7 +13,7 @@ from Crossover import Crossover
 
 class Algorithm(Singleton):
 
-    def __init__(self, elevators, people):
+    def __init__(self, elevators: List[SystemElevator], people: Dict[int, List[Person]]):
         if hasattr(self, 'initialized'): return
         self.initialized = True
 
@@ -27,10 +30,10 @@ class Algorithm(Singleton):
         # Divide into more functions
         member = Member()
         for elevator in self.elevators:
-            tabu = Tabu(elevator.state.path, elevator.state.curr_position, elevator.state.last_move_from_prev_iteration)
+            tabu = Tabu([], elevator.state.position, elevator.state.last_move_from_prev_iteration)
             tabu.generate_new_path()
 
-            member_elevator = elevator.create_elevator_deepcopy()
+            member_elevator = AlgorithmElevator(elevator.state.position, elevator.state.last_move_from_prev_iteration)
             member_elevator.state.path = tabu.get_path()
             member.add_elevator(member_elevator)
         return member
@@ -43,7 +46,7 @@ class Algorithm(Singleton):
     @staticmethod
     def validate_and_repair_member(member: Member) -> None:
         for elevator in member.elevators:
-            tabu = Tabu(elevator.state.path, elevator.state.curr_position, elevator.state.last_move_from_prev_iteration)
+            tabu = Tabu(elevator.state.path, elevator.state.position, elevator.state.last_move_from_prev_iteration)
             tabu.validate_and_repair_path()
             elevator.state.path = tabu.get_path()
 

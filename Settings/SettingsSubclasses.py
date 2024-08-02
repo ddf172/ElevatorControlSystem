@@ -34,3 +34,9 @@ class SettingsAlgorithm:
         self.mutation_rate = 50  # 0 - 1000
         self.mutation_amount = 2
         self.path_length = 10
+
+
+class SettingsElevator:
+    def __init__(self):
+        self.elevator_number = 3
+        self.elevator_capacity = 5

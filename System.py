@@ -1,4 +1,4 @@
-from Algorithm import *
+from Algorithm.Algorithm import *
 from Singleton import Singleton
 
 

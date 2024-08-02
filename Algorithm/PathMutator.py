@@ -1,6 +1,7 @@
 from random import choice, randint
-import Settings
-from Objects import Elevator, Member
+from Settings import Settings
+from Objects.Member import Member
+from Objects.Elevator import AlgorithmElevator
 
 
 class PathMutator:
@@ -11,7 +12,7 @@ class PathMutator:
         possible_mutation = set(self.settings.path.path_possible_moves[move]) - {move}
         return choice(list(possible_mutation))
 
-    def mutate_elevator_path(self, elevator: Elevator) -> None:
+    def mutate_elevator_path(self, elevator: AlgorithmElevator) -> None:
         for i in range(self.settings.algorithm.path_length):
             if randint(0, 1000) < self.settings.algorithm.mutation_rate:
                 elevator.state.path[i] = self.get_move_mutation(elevator.state.path[i])
