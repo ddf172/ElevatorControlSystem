@@ -1,5 +1,5 @@
 from Singleton import Singleton
-from SettingsSubclasses import *
+from .SettingsSubclasses import *
 
 
 class Settings(Singleton):
