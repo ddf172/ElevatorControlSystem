@@ -39,6 +39,6 @@ class Person:
 
 
 class AlgorithmPerson(Person):
-    def __init__(self, start_pos, destination):
+    def __init__(self, start_pos, destination, original_affiliation):
         super().__init__(start_pos, destination)
-        self.original_affiliation = None
+        self.original_affiliation = original_affiliation

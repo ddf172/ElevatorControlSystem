@@ -1,4 +1,5 @@
 from Objects.PathState import PathState
+from Objects.Person import Person
 
 
 class Elevator:
@@ -9,7 +10,6 @@ class Elevator:
 class SystemElevator(Elevator):
     def __init__(self, position, last_move=0):
         super().__init__(position, last_move)
-        self.people = []
 
 
 class AlgorithmElevator(Elevator):

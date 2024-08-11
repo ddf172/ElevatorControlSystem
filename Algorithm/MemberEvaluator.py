@@ -12,33 +12,36 @@ class MemberEvaluator:
         self.people = people
         self.settings = Settings()
 
-        self.move_handlers: Dict[int, Callable[[SystemElevator, AlgorithmElevator, int], None]] = {
+        self.move_handlers: Dict[int, Callable[[AlgorithmElevator, int], None]] = {
             -1: self.handle_move_down,
             0: self.handle_no_move,
             1: self.handle_move_up,
             2: self.handle_door_open
         }
 
-    def handle_move_down(self, sys_elevator: SystemElevator, alg_elevator: AlgorithmElevator, index: int) -> None:
+    def apply_move_fitness(self, alg_elevator: AlgorithmElevator) -> None:
+        alg_elevator.fitness += self.settings.fitness.move
+
+    def handle_move_down(self, alg_elevator: AlgorithmElevator, index: int) -> None:
         pass
 
-    def handle_no_move(self, sys_elevator: SystemElevator, alg_elevator: AlgorithmElevator, index: int) -> None:
+    def handle_no_move(self, alg_elevator: AlgorithmElevator, index: int) -> None:
         pass
 
-    def handle_move_up(self, sys_elevator: SystemElevator, alg_elevator: AlgorithmElevator, index: int) -> None:
+    def handle_move_up(self, alg_elevator: AlgorithmElevator, index: int) -> None:
         pass
 
-    def handle_door_open(self, sys_elevator: SystemElevator, alg_elevator: AlgorithmElevator, index: int) -> None:
+    def handle_door_open(self, alg_elevator: AlgorithmElevator, index: int) -> None:
         pass
 
-    def evaluate_elevator_move(self, sys_elevator: SystemElevator, alg_elevator: AlgorithmElevator, index: int) -> None:
-        move = 2
+    def evaluate_elevator_move(self, alg_elevator: AlgorithmElevator, index: int) -> None:
+        move = alg_elevator.state.path[index]
         handler = self.move_handlers.get(move)
-        handler(sys_elevator, alg_elevator, index)
+        handler(alg_elevator, index)
 
     def evaluate_move(self, member: Member, index: int) -> None:
         for sys_elevator, alg_elevator in zip(member.elevators, self.elevators):
-            self.evaluate_elevator_move(sys_elevator, alg_elevator, index)
+            self.evaluate_elevator_move(alg_elevator, index)
 
     def evaluate(self, member: Member) -> None:
         for i in range(self.settings.path.path_length):

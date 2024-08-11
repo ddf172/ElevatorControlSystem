@@ -16,7 +16,7 @@ class SettingsPath:
 
 class SettingsFitness:
     def __init__(self):
-        self.move_penalty = -1
+        self.move = -1
         self.door_movement = -1
         self.no_move = 0
         self.no_move_with_passenger = -10
