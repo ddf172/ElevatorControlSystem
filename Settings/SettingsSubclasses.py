@@ -26,6 +26,19 @@ class SettingsFitness:
         self.waiting_time = -2
         self.journey_time = -1
 
+    def __dict__(self):
+        return {
+            "move": self.move,
+            "door_movement": self.door_movement,
+            "no_move": self.no_move,
+            "no_move_with_passenger": self.no_move_with_passenger,
+            "missed_destination_floor": self.missed_destination_floor,
+            "drop_out": self.drop_out,
+            "pick_up": self.pick_up,
+            "waiting_time": self.waiting_time,
+            "journey_time": self.journey_time
+        }
+
 
 class SettingsAlgorithm:
     def __init__(self):

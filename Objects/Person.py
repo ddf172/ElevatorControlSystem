@@ -1,5 +1,6 @@
 from random import randint
 from Settings.Settings import Settings
+from typing import Union
 
 
 class Person:
@@ -39,6 +40,7 @@ class Person:
 
 
 class AlgorithmPerson(Person):
-    def __init__(self, start_pos, destination, original_affiliation):
+    def __init__(self, start_pos: int, destination: int, current_affiliation: Union[None, int], original_affiliation: Union[None, int]):
         super().__init__(start_pos, destination)
+        self.current_affiliation = current_affiliation
         self.original_affiliation = original_affiliation
