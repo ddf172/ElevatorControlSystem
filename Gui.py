@@ -55,15 +55,15 @@ class Application(tk.Frame):
         for i, elevator in enumerate(self.system.elevators):
             state += f"  Elevator {i + 1}:\n"
             state += f"    Position: {elevator.curr_position}\n"
-            state += f"    People: {[person.id for person in elevator.people]}\n"
+            state += f"    People: {[person.id for person in elevator.floors]}\n"
 
         state += "People waiting:\n"
-        for person in self.system.people:
+        for person in self.system.floors:
             state += f"  Person ID: {person.id}, Start Position: {person.start_pos}, Destination: {person.destination}\n"
 
         state += "People in elevators:\n"
         for i, elevator in enumerate(self.system.elevators):
-            for person in elevator.people:
+            for person in elevator.floors:
                 state += f"  Elevator {i + 1}, Person ID: {person.id}, Start Position: {person.start_pos}, Destination: {person.destination}\n"
 
         state += "\nBuilding state:\n"

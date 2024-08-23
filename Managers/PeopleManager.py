@@ -8,9 +8,9 @@ T = TypeVar('T', bound='Person')
 
 class PeopleContainer:
     def __init__(self):
-        self.people = {}
+        self.floors = {}
         for i in range(Settings().path.lowest_floor, Settings().path.highest_floor + 1):
-            self.people[i] = {}
+            self.floors[i] = {}
 
         self.count = 0
 
@@ -28,7 +28,7 @@ class PeopleManager(ABC, Generic[T]):
         if position is not None:
             position = person.start_pos if where is None else person.destination
 
-        self.containers[where].people[position][person.id] = person
+        self.containers[where].floors[position][person.id] = person
         self.containers[where].count += 1
 
     @abstractmethod

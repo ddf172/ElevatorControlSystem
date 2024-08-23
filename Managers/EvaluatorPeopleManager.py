@@ -13,8 +13,8 @@ class EvaluatorPeopleManager(PeopleManager[AlgorithmPerson]):
         person.current_affiliation = where
 
     def remove_person(self, person: AlgorithmPerson, where: Union[None, int]) -> bool:
-        if person.id in self.containers[where].people[person.start_pos]:
-            self.containers[where].people[person.start_pos].pop(person.id)
+        if person.id in self.containers[where].floors[person.start_pos]:
+            self.containers[where].floors[person.start_pos].pop(person.id)
             self.containers[where].count -= 1
             self.moved_elevator_people.add(person)
 

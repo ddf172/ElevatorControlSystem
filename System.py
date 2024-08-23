@@ -59,7 +59,7 @@ class System(Singleton):
                 elevator.curr_position -= 1
             elif move == 2:
                 people_to_remove = []
-                for person_index, person in enumerate(elevator.people):
+                for person_index, person in enumerate(elevator.floors):
                     if person.destination == elevator.curr_position:
                         people_to_remove.append(person_index)
 
@@ -67,15 +67,15 @@ class System(Singleton):
                 people_to_remove = sorted(people_to_remove, reverse=True)
 
                 for person_index in people_to_remove:
-                    elevator.people.pop(person_index)
+                    elevator.floors.pop(person_index)
 
                 people_entering_elevator = []
                 for person_index, person in enumerate(self.people):
-                    if len(elevator.people) == elevator.capacity:
+                    if len(elevator.floors) == elevator.capacity:
                         break
                     if person.start_pos == elevator.curr_position:
                         people_entering_elevator.append(person_index)
-                        elevator.people.append(person)
+                        elevator.floors.append(person)
 
                 people_entering_elevator = sorted(people_entering_elevator, reverse=True)
                 for person_index in people_entering_elevator:

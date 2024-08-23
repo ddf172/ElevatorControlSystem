@@ -72,43 +72,43 @@ class Algorithm(Singleton):
 
                     if move == 1 or move == -1:
                         missed_count = 0
-                        for person in elevator.people:
+                        for person in elevator.floors:
                             if person.destination == elevator.curr_position:
                                 missed_count += 1
 
                         elevator.fitness += missed_count * self.missed_destination_floor
-                        elevator.fitness += self.journey_time * len(elevator.people)
+                        elevator.fitness += self.journey_time * len(elevator.floors)
                         elevator.fitness += self.move_penalty
 
                         elevator.curr_position += move
 
                     elif move == 0:
                         elevator.fitness += self.no_move
-                        elevator.fitness += len(elevator.people) * self.no_move_with_passenger
-                        elevator.fitness += len(elevator.people) * self.journey_time
+                        elevator.fitness += len(elevator.floors) * self.no_move_with_passenger
+                        elevator.fitness += len(elevator.floors) * self.journey_time
 
                     else:
                         elevator.fitness += self.door_movement
                         people_to_remove = []
-                        for person_index, person in enumerate(elevator.people):
+                        for person_index, person in enumerate(elevator.floors):
                             if person.destination == elevator.curr_position:
                                 people_to_remove.append(person_index)
 
                         people_to_remove = sorted(people_to_remove, reverse=True)
 
                         for person_index in people_to_remove:
-                            elevator.people.pop(person_index)
+                            elevator.floors.pop(person_index)
                             elevator.fitness += self.drop_out
 
-                        elevator.fitness += len(elevator.people) * self.journey_time
+                        elevator.fitness += len(elevator.floors) * self.journey_time
 
                         people_entering_elevator = []
                         for person_index, person in enumerate(people_copy):
-                            if len(elevator.people) == elevator.capacity:
+                            if len(elevator.floors) == elevator.capacity:
                                 break
                             if person.start_pos == elevator.curr_position:
                                 people_entering_elevator.append(person_index)
-                                elevator.people.append(person)
+                                elevator.floors.append(person)
                                 elevator.fitness += self.pick_up
 
                         people_entering_elevator = sorted(people_entering_elevator, reverse=True)

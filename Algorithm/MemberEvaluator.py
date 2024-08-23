@@ -24,7 +24,7 @@ class MemberEvaluator:
         self.handle_fitness(arg_elevator, 'move_fitness')
 
         # Handle missed destination floor
-        for _ in self.people_manager.containers[elevator_index].people[arg_elevator.state.position]:
+        for _ in self.people_manager.containers[elevator_index].floors[arg_elevator.state.position]:
             self.handle_fitness(arg_elevator, "missed_destination_floor")
 
     def handle_move_down(self, alg_elevator: AlgorithmElevator, elevator_index: int) -> None:
@@ -46,13 +46,13 @@ class MemberEvaluator:
         self.handle_fitness(alg_elevator, 'door_movement_fitness')
 
         # Handle drop out
-        people_to_drop = self.people_manager.containers[elevator_index].people[alg_elevator.state.position]
+        people_to_drop = self.people_manager.containers[elevator_index].floors[alg_elevator.state.position]
         for person in people_to_drop:
             self.people_manager.remove_person(person, elevator_index)
             self.handle_fitness(alg_elevator, 'drop_out_fitness')
 
         # Handle pick up
-        people_to_pick = self.people_manager.containers[None].people[alg_elevator.state.position]
+        people_to_pick = self.people_manager.containers[None].floors[alg_elevator.state.position]
         for person in people_to_pick:
             self.people_manager.move_person(person, None, elevator_index)
             self.handle_fitness(alg_elevator, 'pick_up_fitness')
