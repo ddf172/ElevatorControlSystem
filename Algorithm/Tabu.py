@@ -31,11 +31,15 @@ class Tabu:
 
         return key
 
-    def get_possible_moves(self, key: Union[Floor, int]) -> List[int]:
+    def _get_possible_moves(self, key: Union[Floor, int], prev_move) -> List[int]:
+        if key == Floor.BOTTOM.value and prev_move == -1:
+            return [2]
+        if key == Floor.TOP.value and prev_move == 1:
+            return [2]
         return self.settings.path.path_possible_moves.get(key)
 
     def get_valid_move_list(self, prev_move: int, curr_floor: int) -> List[int]:
-        possible_moves = self.get_possible_moves(self.get_proper_key(curr_floor, prev_move))
+        possible_moves = self._get_possible_moves(self.get_proper_key(curr_floor, prev_move), prev_move)
 
         if not possible_moves:
             raise ValueError(f"No valid moves for: floor={curr_floor}, prev_move={prev_move}")
@@ -68,7 +72,7 @@ class Tabu:
         if curr_floor <= self.settings.get_lowest_floor()-1 or curr_floor >= self.settings.get_highest_floor() + 1:
             raise ValueError(f"Invalid floor: {curr_floor}, not possible to repair")
 
-        possible_moves = self.get_possible_moves(self.get_proper_key(curr_floor, prev_move))
+        possible_moves = self.get_valid_move_list(prev_move, curr_floor)
         if move in possible_moves:
             return move
         return choice(possible_moves)
