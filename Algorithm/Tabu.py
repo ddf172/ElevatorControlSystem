@@ -1,3 +1,5 @@
+from turtledemo.penrose import start
+
 from Settings.Settings import Settings
 from random import choice
 from enum import Enum
@@ -77,12 +79,20 @@ class Tabu:
             return move
         return choice(possible_moves)
 
-    def validate_and_repair_path(self) -> None:
+    def validate_and_repair_path(self, start_index: int = 0) -> None:
         if not self.state.path:
             return
         original_position = self.state.position
-        prev_move = self.state.last_move_from_prev_iteration
-        for index, move in enumerate(self.state.path):
+
+        self.state.position += sum(move for move in self.state.path[:start_index] if move <= 1)
+
+        if start_index == 0:
+            prev_move = self.state.last_move_from_prev_iteration
+        else:
+            prev_move = self.state.path[start_index - 1]
+
+        print(start_index)
+        for index, move in enumerate(self.state.path[start_index:], start=start_index):
             self.state.path[index] = self.get_repaired_move(prev_move, move, self.state.position)
             if self.state.path[index] <= 1:
                 self.state.position += self.state.path[index]

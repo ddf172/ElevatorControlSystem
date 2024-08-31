@@ -103,6 +103,7 @@ def generate_path(tabu, settings, position, last_move):
 def verify_path(tabu, settings, position, last_move, expected_position, path):
 
     assert len(path) == settings.get_path_length(), "Path length mismatch."
+    print(path)
     for move in path:
         assert move in tabu.get_valid_move_list(last_move, position), f"Invalid move {move} from position {position}."
         last_move = move
@@ -144,6 +145,16 @@ def test_get_repaired_move(tabu, settings):
 def test_validate_and_repair_path(tabu, settings):
     tabu.state.path = [1, 2, 1, 3, 1, 0, 0, 1, -1, 0]  # 3 is invalid
     tabu.validate_and_repair_path()
+    verify_path(tabu, settings, position=0, last_move=0, expected_position=0, path=tabu.state.path)
+
+
+def test_validate_and_repair_path_start_index(tabu, settings):
+    tabu.state.path = [1, 2, 1, 3, 1, 0, 0, 1, -1, 0]
+    tabu.validate_and_repair_path(start_index=3)
+    verify_path(tabu, settings, position=0, last_move=0, expected_position=0, path=tabu.state.path)
+
+    tabu.state.path = [1, 2, 1, 3, 1, 0, 0, 1, -1, 0]
+    tabu.validate_and_repair_path(start_index=5)
     verify_path(tabu, settings, position=0, last_move=0, expected_position=0, path=tabu.state.path)
 
 
