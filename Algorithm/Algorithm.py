@@ -7,7 +7,6 @@ from Objects.Elevator import *
 from Settings.Settings import Settings
 from Singleton import Singleton
 from Tabu import Tabu
-from PathMutator import PathMutator
 from Crossover import Crossover
 
 
@@ -23,7 +22,6 @@ class Algorithm(Singleton):
         self.population = []
         self.best_member = Member()
         self.settings = Settings()
-        self.mutator = PathMutator()
         self.crossover = Crossover()
 
     def generate_member(self) -> Member:
@@ -128,7 +126,11 @@ class Algorithm(Singleton):
             self.best_member = copy.deepcopy(current_generation_best)
 
     def mutate_population(self) -> None:
-        self.mutator.mutate_population(self.population)
+        for member in self.population:
+            for elevator in member.elevators:
+                tabu = Tabu(elevator.state.path, elevator.state.position, elevator.state.last_move_from_prev_iteration)
+                tabu.mutate_elevator_path()
+                elevator.state.path = tabu.get_path()
 
     def run_algorithm(self):
         self.generate_population()
