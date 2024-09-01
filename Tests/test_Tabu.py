@@ -2,6 +2,7 @@ import pytest
 from Algorithm.Tabu import Tabu, Floor
 from Settings.Settings import Settings
 from Objects.PathState import PathState
+from unittest.mock import patch
 
 
 @pytest.fixture
@@ -94,16 +95,15 @@ def test_get_previous_move(tabu):
     assert tabu.get_previous_move() == 1
 
 
-def generate_path(tabu, settings, position, last_move):
+def generate_path(tabu, position, last_move):
     tabu.state.position = position
     tabu.state.last_move_from_prev_iteration = last_move
     return tabu.generate_new_path()
 
 
-def verify_path(tabu, settings, position, last_move, expected_position, path):
+def verify_path(tabu, settings, position, last_move, expected_position, path, path_length=10):
 
-    assert len(path) == settings.get_path_length(), "Path length mismatch."
-    print(path)
+    assert len(path) == path_length, "Path length mismatch."
     for move in path:
         assert move in tabu.get_valid_move_list(last_move, position), f"Invalid move {move} from position {position}."
         last_move = move
@@ -114,15 +114,15 @@ def verify_path(tabu, settings, position, last_move, expected_position, path):
 
 def test_generate_new_path(tabu, settings):
     # Test #1
-    path = generate_path(tabu, settings, 0, 0)
+    path = generate_path(tabu, 0, 0)
     verify_path(tabu, settings, position=0, last_move=0, expected_position=0, path=path)
 
     # Test #2
-    path = generate_path(tabu, settings, 5, 1)
+    path = generate_path(tabu, 5, 1)
     verify_path(tabu, settings, position=5, last_move=1, expected_position=5, path=path)
 
     # Test #3
-    path = generate_path(tabu, settings, settings.get_highest_floor(), 1)
+    path = generate_path(tabu, settings.get_highest_floor(), 1)
     verify_path(tabu, settings, position=settings.get_highest_floor(), last_move=1,
                            expected_position=settings.get_highest_floor(), path=path)
 
@@ -155,7 +155,8 @@ def test_validate_and_repair_path_start_index(tabu, settings):
 
     tabu.state.path = [1, 2, 1, 3, 1, 0, 0, 1, -1, 0]
     tabu.validate_and_repair_path(start_index=5)
-    verify_path(tabu, settings, position=0, last_move=0, expected_position=0, path=tabu.state.path)
+    assert tabu.state.path[3] == 3, f"Expected value at index 4 to be 3, but got {tabu.state.path[3]}"
+    verify_path(tabu, settings, position=0, last_move=0, expected_position=0, path=tabu.state.path[5:], path_length=5)
 
 
 def test_get_path(tabu):

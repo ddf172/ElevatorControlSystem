@@ -1,5 +1,3 @@
-from turtledemo.penrose import start
-
 from Settings.Settings import Settings
 from random import choice
 from enum import Enum
@@ -91,7 +89,6 @@ class Tabu:
         else:
             prev_move = self.state.path[start_index - 1]
 
-        print(start_index)
         for index, move in enumerate(self.state.path[start_index:], start=start_index):
             self.state.path[index] = self.get_repaired_move(prev_move, move, self.state.position)
             if self.state.path[index] <= 1:
