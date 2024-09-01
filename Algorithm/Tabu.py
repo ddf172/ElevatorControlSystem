@@ -1,5 +1,5 @@
 from Settings.Settings import Settings
-from random import choice
+from random import choice, randint
 from enum import Enum
 from typing import List, Union
 from Objects.PathState import PathState
@@ -99,3 +99,17 @@ class Tabu:
 
     def get_path(self) -> List[int]:
         return self.state.path
+
+    def get_move_mutation(self, move: int) -> int:
+        possible_mutation = set(self.settings.path.path_possible_moves[move]) - {move}
+        if not possible_mutation:
+            return move
+        return choice(list(possible_mutation))
+
+    def mutate_elevator_path(self) -> None:
+        for i in range(self.settings.path.path_length):
+            if randint(0, 1000) < self.settings.algorithm.mutation_rate:
+                self.state.path[i] = self.get_move_mutation(self.state.path[i])
+
+        self.validate_and_repair_path()
+        # ADD Validation and repair from first mutation index

@@ -162,3 +162,45 @@ def test_validate_and_repair_path_start_index(tabu, settings):
 def test_get_path(tabu):
     tabu.state.path = [1, 2, 3]
     assert tabu.get_path() == [1, 2, 3]
+
+
+def test_get_move_mutation(tabu, settings):
+    for move in settings.path.path_possible_moves:
+        mutated_move = tabu.get_move_mutation(move)
+        assert mutated_move in settings.path.path_possible_moves[move]
+        assert mutated_move != move
+
+
+@pytest.mark.parametrize('mock_value', [0, None])
+def test_mutate_elevator_path(tabu, settings, mock_value):
+    original_mutation_rate = settings.algorithm.mutation_rate
+    if mock_value is None:
+        mock_value = original_mutation_rate + 1
+
+    with patch('Algorithm.Tabu.randint', return_value=mock_value):
+        tabu.state.path = [0] * settings.get_path_length()
+        original_path = tabu.state.path.copy()
+        tabu.mutate_elevator_path()
+
+        if mock_value == 0:
+            assert len(tabu.state.path) == len(original_path)
+            assert tabu.state.path != original_path
+        else:
+            assert tabu.state.path == original_path
+
+
+@pytest.mark.parametrize('mock_value', [0, 50])
+def test_path_integrity_after_mutation(tabu, settings, mock_value):
+    with patch('Algorithm.Tabu.randint', return_value=mock_value):
+        tabu.state.path = [0] * settings.get_path_length()  # Initialize path
+        tabu.mutate_elevator_path()
+        verify_path(tabu, settings, tabu.state.position, tabu.state.last_move_from_prev_iteration, tabu.state.position, tabu.state.path)
+
+
+@pytest.mark.parametrize('mock_value', [0, 50])
+def test_multiple_mutations(tabu, settings, mock_value):
+    with patch('Algorithm.Tabu.randint', return_value=mock_value):
+        tabu.state.path = [0] * settings.get_path_length()  # Initialize path
+        for _ in range(5):  # Perform multiple mutations
+            tabu.mutate_elevator_path()
+            verify_path(tabu, settings, tabu.state.position, tabu.state.last_move_from_prev_iteration, tabu.state.position, tabu.state.path)
