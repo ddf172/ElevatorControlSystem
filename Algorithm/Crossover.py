@@ -2,7 +2,7 @@ from Objects.Member import Member
 from Objects.Elevator import AlgorithmElevator
 from Settings.Settings import Settings
 from random import choice
-from Tabu import Tabu
+from Algorithm.Tabu import Tabu
 
 
 class Crossover:
