@@ -45,7 +45,6 @@ class SettingsAlgorithm:
         self.population_size = 200
         self.generations = 50
         self.mutation_rate = 50  # 0 - 1000
-        self.mutation_amount = 2
 
 
 class SettingsElevator:
