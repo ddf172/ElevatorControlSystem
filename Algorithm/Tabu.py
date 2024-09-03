@@ -107,9 +107,16 @@ class Tabu:
         return choice(list(possible_mutation))
 
     def mutate_elevator_path(self) -> None:
+        first_mutating_index = -1
+
         for i in range(self.settings.path.path_length):
             if randint(0, 1000) < self.settings.algorithm.mutation_rate:
-                self.state.path[i] = self.get_move_mutation(self.state.path[i])
+                move = self.get_move_mutation(self.state.path[i])
+                if move != self.state.path[i] and first_mutating_index == -1:
+                    first_mutating_index = i
 
-        self.validate_and_repair_path()
+                self.state.path[i] = move
+
+        if first_mutating_index != -1:
+            self.validate_and_repair_path(first_mutating_index)
         # ADD Validation and repair from first mutation index
