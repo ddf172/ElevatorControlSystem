@@ -25,7 +25,7 @@ class Crossover:
         offspring2.state.path.append(self.get_offspring_path_move(move2, move1))
 
     def crossover_elevators(self, elevator1: AlgorithmElevator, elevator2: AlgorithmElevator, offspring1_elevator: AlgorithmElevator, offspring2_elevator: AlgorithmElevator) -> tuple[AlgorithmElevator, AlgorithmElevator]:
-        for i in range(self.settings.algorithm.path_length):
+        for i in range(self.settings.path.path_length):
             self.append_offspring_elevator_move(elevator1, elevator2, offspring1_elevator, offspring2_elevator, i)
         return offspring1_elevator, offspring2_elevator
 
