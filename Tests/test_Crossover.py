@@ -129,3 +129,16 @@ def test_fix_elevator_path(crossover, tabu, settings):
 
     crossover.fix_elevator_path(elevator)
     verify_path(tabu, settings, elevator.state.position, elevator.state.last_move_from_prev_iteration, elevator.state.position, elevator.state.path, settings.path.path_length)
+
+
+def test_created_elevator_offspring(crossover, settings, prepare_crossover_objects, tabu):
+    elevator1, elevator2, offspring1, offspring2 = prepare_crossover_objects
+
+    path1 = tabu.generate_new_path()
+    path2 = tabu.generate_new_path()
+    prepare_crossover_objects_paths(elevator1, elevator2, offspring1, offspring2, path1, path2)
+
+    offspring1, offspring2 = crossover.create_elevator_offspring(elevator1, elevator2)
+
+    verify_path(tabu, settings, offspring1.state.position, offspring1.state.last_move_from_prev_iteration, offspring1.state.position, offspring1.state.path, settings.path.path_length)
+    verify_path(tabu, settings, offspring2.state.position, offspring2.state.last_move_from_prev_iteration, offspring2.state.position, offspring2.state.path, settings.path.path_length)
