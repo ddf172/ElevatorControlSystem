@@ -2,7 +2,7 @@ from Objects.Member import Member
 from Objects.Elevator import AlgorithmElevator
 from Settings.Settings import Settings
 from random import choice
-from Tabu import Tabu
+from Algorithm.Tabu import Tabu
 
 
 class Crossover:
@@ -25,7 +25,7 @@ class Crossover:
         offspring2.state.path.append(self.get_offspring_path_move(move2, move1))
 
     def crossover_elevators(self, elevator1: AlgorithmElevator, elevator2: AlgorithmElevator, offspring1_elevator: AlgorithmElevator, offspring2_elevator: AlgorithmElevator) -> tuple[AlgorithmElevator, AlgorithmElevator]:
-        for i in range(self.settings.algorithm.path_length):
+        for i in range(self.settings.path.path_length):
             self.append_offspring_elevator_move(elevator1, elevator2, offspring1_elevator, offspring2_elevator, i)
         return offspring1_elevator, offspring2_elevator
 
@@ -53,7 +53,7 @@ class Crossover:
 
         return offspring1, offspring2
 
-    def create_parents(self, parent1: Member, parent2: Member) -> tuple[Member, Member]:
+    def create_offspring(self, parent1: Member, parent2: Member) -> tuple[Member, Member]:
         offspring1 = Member()
         offspring2 = Member()
 
@@ -64,7 +64,7 @@ class Crossover:
             parent1 = population[i]
             parent2 = population[i + 1]
 
-            offspring1, offspring2 = self.create_parents(parent1, parent2)
+            offspring1, offspring2 = self.create_offspring(parent1, parent2)
 
             population.append(offspring1)
             population.append(offspring2)
