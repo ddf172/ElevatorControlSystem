@@ -3,6 +3,8 @@ from Algorithm.Crossover import Crossover
 from Settings.Settings import Settings
 from Objects.Elevator import AlgorithmElevator
 from Algorithm.Tabu import Tabu
+from random import choice
+from Tests.test_Tabu import verify_path
 
 
 @pytest.fixture
@@ -117,3 +119,13 @@ def test_crossover_elevators(crossover, settings, prepare_crossover_objects, tab
         else:
             assert offspring1.state.path[i] in set(settings.path.path_possible_moves[path1[i]]) - {path1[i]}
             assert offspring2.state.path[i] in set(settings.path.path_possible_moves[path2[i]]) - {path2[i]}
+
+
+def test_fix_elevator_path(crossover, tabu, settings):
+    elevator = AlgorithmElevator(0, 0)
+    elevator.state.path = []
+    for _ in range(settings.path.path_length):
+        elevator.state.path.append(choice([-1, 0, 1, 2]))
+
+    crossover.fix_elevator_path(elevator)
+    verify_path(tabu, settings, elevator.state.position, elevator.state.last_move_from_prev_iteration, elevator.state.position, elevator.state.path, settings.path.path_length)
