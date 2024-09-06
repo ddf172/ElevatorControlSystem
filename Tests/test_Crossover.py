@@ -2,6 +2,7 @@ import pytest
 from Algorithm.Crossover import Crossover
 from Settings.Settings import Settings
 from Objects.Elevator import AlgorithmElevator
+from Objects.Member import Member
 from Algorithm.Tabu import Tabu
 from random import choice
 from Tests.test_Tabu import verify_path
@@ -142,3 +143,25 @@ def test_created_elevator_offspring(crossover, settings, prepare_crossover_objec
 
     verify_path(tabu, settings, offspring1.state.position, offspring1.state.last_move_from_prev_iteration, offspring1.state.position, offspring1.state.path, settings.path.path_length)
     verify_path(tabu, settings, offspring2.state.position, offspring2.state.last_move_from_prev_iteration, offspring2.state.position, offspring2.state.path, settings.path.path_length)
+
+
+def test_crossover_members(crossover, settings, prepare_crossover_objects, tabu):
+    parent1 = Member()
+    parent2 = Member()
+    offspring1 = Member()
+    offspring2 = Member()
+
+    for _ in range(settings.elevator.elevator_number):
+        elevator1 = AlgorithmElevator(0, 0)
+        elevator2 = AlgorithmElevator(0, 0)
+        for _ in range(settings.path.path_length):
+            elevator1.state.path = tabu.generate_new_path()
+            elevator2.state.path = tabu.generate_new_path()
+        parent1.add_elevator(elevator1)
+        parent2.add_elevator(elevator2)
+
+    offspring1, offspring2 = crossover.crossover_members(parent1, parent2, offspring1, offspring2)
+
+    for i in range(settings.elevator.elevator_number):
+        verify_path(tabu, settings, offspring1.elevators[i].state.position, offspring1.elevators[i].state.last_move_from_prev_iteration, offspring1.elevators[i].state.position, offspring1.elevators[i].state.path, settings.path.path_length)
+        verify_path(tabu, settings, offspring2.elevators[i].state.position, offspring2.elevators[i].state.last_move_from_prev_iteration, offspring2.elevators[i].state.position, offspring2.elevators[i].state.path, settings.path.path_length)
