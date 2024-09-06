@@ -186,3 +186,21 @@ def test_create_offspring(crossover, settings, prepare_crossover_objects, tabu):
         verify_path(tabu, settings, offspring1.elevators[i].state.position, offspring1.elevators[i].state.last_move_from_prev_iteration, offspring1.elevators[i].state.position, offspring1.elevators[i].state.path, settings.path.path_length)
         verify_path(tabu, settings, offspring2.elevators[i].state.position, offspring2.elevators[i].state.last_move_from_prev_iteration, offspring2.elevators[i].state.position, offspring2.elevators[i].state.path, settings.path.path_length)
 
+
+def test_crossover_population(crossover, settings, prepare_crossover_objects, tabu):
+    population = []
+    for _ in range(settings.algorithm.population_size):
+        member = Member()
+        for _ in range(settings.elevator.elevator_number):
+            elevator = AlgorithmElevator(0, 0)
+            elevator.state.path = tabu.generate_new_path()
+            member.add_elevator(elevator)
+        population.append(member)
+
+    crossover.crossover_population(population)
+
+    for i in range(settings.algorithm.population_size, len(population)):
+        for j in range(settings.elevator.elevator_number):
+            verify_path(tabu, settings, population[i].elevators[j].state.position, population[i].elevators[j].state.last_move_from_prev_iteration, population[i].elevators[j].state.position, population[i].elevators[j].state.path, settings.path.path_length)
+
+    assert len(population) == settings.algorithm.population_size * 2
