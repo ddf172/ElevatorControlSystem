@@ -53,7 +53,7 @@ class Crossover:
 
         return offspring1, offspring2
 
-    def create_parents(self, parent1: Member, parent2: Member) -> tuple[Member, Member]:
+    def create_offspring(self, parent1: Member, parent2: Member) -> tuple[Member, Member]:
         offspring1 = Member()
         offspring2 = Member()
 
@@ -64,7 +64,7 @@ class Crossover:
             parent1 = population[i]
             parent2 = population[i + 1]
 
-            offspring1, offspring2 = self.create_parents(parent1, parent2)
+            offspring1, offspring2 = self.create_offspring(parent1, parent2)
 
             population.append(offspring1)
             population.append(offspring2)
