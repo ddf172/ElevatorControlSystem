@@ -117,7 +117,7 @@ def test_fix_elevator_path(crossover, tabu, settings):
         elevator.state.path.append(choice([-1, 0, 1, 2]))
 
     crossover.fix_elevator_path(elevator)
-    verify_path(tabu, settings, elevator.state.position, elevator.state.last_move_from_prev_iteration, elevator.state.position, elevator.state.path, settings.path.path_length)
+    verify_path(tabu, elevator.state.position, elevator.state.last_move_from_prev_iteration, elevator.state.position, elevator.state.path, settings.path.path_length)
 
 
 def test_created_elevator_offspring(crossover, settings, prepare_crossover_objects, tabu):
@@ -129,8 +129,8 @@ def test_created_elevator_offspring(crossover, settings, prepare_crossover_objec
 
     offspring1, offspring2 = crossover.create_elevator_offspring(elevator1, elevator2)
 
-    verify_path(tabu, settings, offspring1.state.position, offspring1.state.last_move_from_prev_iteration, offspring1.state.position, offspring1.state.path, settings.path.path_length)
-    verify_path(tabu, settings, offspring2.state.position, offspring2.state.last_move_from_prev_iteration, offspring2.state.position, offspring2.state.path, settings.path.path_length)
+    verify_path(tabu, offspring1.state.position, offspring1.state.last_move_from_prev_iteration, offspring1.state.position, offspring1.state.path, settings.path.path_length)
+    verify_path(tabu, offspring2.state.position, offspring2.state.last_move_from_prev_iteration, offspring2.state.position, offspring2.state.path, settings.path.path_length)
 
 
 def test_crossover_members(crossover, settings, prepare_crossover_objects, tabu):
@@ -151,8 +151,8 @@ def test_crossover_members(crossover, settings, prepare_crossover_objects, tabu)
     offspring1, offspring2 = crossover.crossover_members(parent1, parent2, offspring1, offspring2)
 
     for i in range(settings.elevator.elevator_number):
-        verify_path(tabu, settings, offspring1.elevators[i].state.position, offspring1.elevators[i].state.last_move_from_prev_iteration, offspring1.elevators[i].state.position, offspring1.elevators[i].state.path, settings.path.path_length)
-        verify_path(tabu, settings, offspring2.elevators[i].state.position, offspring2.elevators[i].state.last_move_from_prev_iteration, offspring2.elevators[i].state.position, offspring2.elevators[i].state.path, settings.path.path_length)
+        verify_path(tabu, offspring1.elevators[i].state.position, offspring1.elevators[i].state.last_move_from_prev_iteration, offspring1.elevators[i].state.position, offspring1.elevators[i].state.path, settings.path.path_length)
+        verify_path(tabu, offspring2.elevators[i].state.position, offspring2.elevators[i].state.last_move_from_prev_iteration, offspring2.elevators[i].state.position, offspring2.elevators[i].state.path, settings.path.path_length)
 
 
 def test_create_offspring(crossover, settings, prepare_crossover_objects, tabu):
@@ -171,8 +171,8 @@ def test_create_offspring(crossover, settings, prepare_crossover_objects, tabu):
     offspring1, offspring2 = crossover.create_offspring(parent1, parent2)
 
     for i in range(settings.elevator.elevator_number):
-        verify_path(tabu, settings, offspring1.elevators[i].state.position, offspring1.elevators[i].state.last_move_from_prev_iteration, offspring1.elevators[i].state.position, offspring1.elevators[i].state.path, settings.path.path_length)
-        verify_path(tabu, settings, offspring2.elevators[i].state.position, offspring2.elevators[i].state.last_move_from_prev_iteration, offspring2.elevators[i].state.position, offspring2.elevators[i].state.path, settings.path.path_length)
+        verify_path(tabu, offspring1.elevators[i].state.position, offspring1.elevators[i].state.last_move_from_prev_iteration, offspring1.elevators[i].state.position, offspring1.elevators[i].state.path, settings.path.path_length)
+        verify_path(tabu, offspring2.elevators[i].state.position, offspring2.elevators[i].state.last_move_from_prev_iteration, offspring2.elevators[i].state.position, offspring2.elevators[i].state.path, settings.path.path_length)
 
 
 def test_crossover_population(crossover, settings, prepare_crossover_objects, tabu):
@@ -189,6 +189,6 @@ def test_crossover_population(crossover, settings, prepare_crossover_objects, ta
 
     for i in range(settings.algorithm.population_size, len(population)):
         for j in range(settings.elevator.elevator_number):
-            verify_path(tabu, settings, population[i].elevators[j].state.position, population[i].elevators[j].state.last_move_from_prev_iteration, population[i].elevators[j].state.position, population[i].elevators[j].state.path, settings.path.path_length)
+            verify_path(tabu, population[i].elevators[j].state.position, population[i].elevators[j].state.last_move_from_prev_iteration, population[i].elevators[j].state.position, population[i].elevators[j].state.path, settings.path.path_length)
 
     assert len(population) == settings.algorithm.population_size * 2
