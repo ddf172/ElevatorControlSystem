@@ -1,9 +1,7 @@
 import pytest
 from Algorithm.Crossover import Crossover
-from Settings.Settings import Settings
 from Objects.Elevator import AlgorithmElevator
 from Objects.Member import Member
-from Algorithm.Tabu import Tabu
 from random import choice
 from Tests.test_Tabu import verify_path
 
@@ -13,11 +11,6 @@ def crossover():
     return Crossover()
 
 
-@pytest.fixture
-def settings():
-    return Settings()
-
-
 @pytest.fixture()
 def prepare_crossover_objects():
     elevator1 = AlgorithmElevator(0, 0)
@@ -25,11 +18,6 @@ def prepare_crossover_objects():
     offspring1 = AlgorithmElevator(0, 0)
     offspring2 = AlgorithmElevator(0, 0)
     return elevator1, elevator2, offspring1, offspring2
-
-
-@pytest.fixture
-def tabu():
-    return Tabu([], 0, 0)
 
 
 def prepare_crossover_objects_paths(elevator1, elevator2, offspring1, offspring2, elevator1_path, elevator2_path):

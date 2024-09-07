@@ -5,16 +5,6 @@ from Objects.PathState import PathState
 from unittest.mock import patch
 
 
-@pytest.fixture
-def tabu():
-    return Tabu([])
-
-
-@pytest.fixture
-def settings():
-    return Settings()
-
-
 def test_init(tabu, settings):
     assert isinstance(tabu.settings, Settings)
     assert isinstance(tabu.state, PathState)
