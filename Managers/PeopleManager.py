@@ -21,7 +21,7 @@ class PeopleManager(ABC, Generic[T]):
         self.containers = dict()
 
         self.containers[None] = PeopleContainer()
-        for i in range(self.settings.elevator.count):
+        for i in range(self.settings.elevator.elevator_number):
             self.containers[i] = PeopleContainer()
 
     def add_person(self, person: T, where: Union[None, int], position: int = None) -> None:
