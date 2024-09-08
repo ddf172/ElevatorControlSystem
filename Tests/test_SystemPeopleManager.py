@@ -46,3 +46,47 @@ def test_add_person(system_people_manager, settings):
     with pytest.raises(KeyError):
         person = Person(0, 1)
         system_people_manager.add_person(person, settings.elevator.elevator_number)
+
+
+def test_remove_person(system_people_manager, settings):
+    person = Person(0, 1)
+    system_people_manager.add_person(person, None)
+
+    assert person.id in system_people_manager.containers[None].floors[person.start_pos]
+    assert system_people_manager.containers[None].count == 1
+
+    assert system_people_manager.remove_person(person, None)
+    assert person.id not in system_people_manager.containers[None].floors[person.start_pos]
+    assert system_people_manager.containers[None].count == 0
+
+    assert not system_people_manager.remove_person(person, None)
+
+    person = Person(0, 1)
+    system_people_manager.add_person(person, 0)
+
+    assert person.id in system_people_manager.containers[0].floors[person.destination]
+    assert system_people_manager.containers[0].count == 1
+
+    assert system_people_manager.remove_person(person, 0)
+    assert person.id not in system_people_manager.containers[0].floors[person.destination]
+    assert system_people_manager.containers[0].count == 0
+
+    assert not system_people_manager.remove_person(person, 0)
+
+
+def test_move_person(system_people_manager, settings):
+    person = Person(0, 1)
+    system_people_manager.add_person(person, None)
+
+    assert person.id in system_people_manager.containers[None].floors[person.start_pos]
+    assert system_people_manager.containers[None].count == 1
+
+    system_people_manager.move_person(person, None, 0)
+
+    assert person.id in system_people_manager.containers[0].floors[person.destination]
+    assert system_people_manager.containers[0].count == 1
+    assert person.id not in system_people_manager.containers[None].floors[person.start_pos]
+    assert system_people_manager.containers[None].count == 0
+
+    with pytest.raises(KeyError):
+        system_people_manager.move_person(person, None, 0)
