@@ -25,7 +25,7 @@ class PeopleManager(ABC, Generic[T]):
             self.containers[i] = PeopleContainer()
 
     def add_person(self, person: T, where: Union[None, int], position: int = None) -> None:
-        if position is not None:
+        if position is None:
             position = person.start_pos if where is None else person.destination
 
         self.containers[where].floors[position][person.id] = person
