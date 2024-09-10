@@ -8,8 +8,12 @@ class SystemPeopleManager(PeopleManager[Person]):
         super().__init__()
 
     def remove_person(self, person: Person, where: Union[int, None]) -> bool:
-        if person.id in self.containers[where].floors[person.start_pos]:
-            self.containers[where].floors[person.start_pos].pop(person.id)
+        if where is None:
+            position = person.start_pos
+        else:
+            position = person.destination
+        if person.id in self.containers[where].floors[position]:
+            self.containers[where].floors[position].pop(person.id)
             self.containers[where].count -= 1
             return True
         return False

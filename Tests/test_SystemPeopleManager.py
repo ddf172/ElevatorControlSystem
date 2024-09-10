@@ -88,5 +88,5 @@ def test_move_person(system_people_manager, settings):
     assert person.id not in system_people_manager.containers[None].floors[person.start_pos]
     assert system_people_manager.containers[None].count == 0
 
-    with pytest.raises(KeyError):
+    with pytest.raises(IndexError):
         system_people_manager.move_person(person, None, 0)
