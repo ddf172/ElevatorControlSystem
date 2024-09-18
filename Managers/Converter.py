@@ -10,7 +10,8 @@ def _convert_person(person: Person, where: Union[None, int]) -> AlgorithmPerson:
         start_pos=person.start_pos,
         destination=person.destination,
         current_affiliation=where,
-        original_affiliation=where
+        original_affiliation=where,
+        person_id=person.id
     )
 
 
