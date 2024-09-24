@@ -6,9 +6,13 @@ from typing import Union
 class Person:
     person_id = 0
 
-    def __init__(self, start_pos, destination):
-        self.id = Person.person_id
-        Person.person_id += 1
+    def __init__(self, start_pos, destination, person_id=None):
+        if person_id is not None:
+            self.id = person_id
+            Person.person_id = person_id + 1
+        else:
+            self.id = Person.person_id
+            Person.person_id += 1
         self.start_pos = start_pos
         self.destination = destination
         self.settings = Settings()
@@ -40,7 +44,7 @@ class Person:
 
 
 class AlgorithmPerson(Person):
-    def __init__(self, start_pos: int, destination: int, current_affiliation: Union[None, int], original_affiliation: Union[None, int]):
-        super().__init__(start_pos, destination)
+    def __init__(self, start_pos: int, destination: int, current_affiliation: Union[None, int], original_affiliation: Union[None, int], person_id=None):
+        super().__init__(start_pos, destination, person_id)
         self.current_affiliation = current_affiliation
         self.original_affiliation = original_affiliation

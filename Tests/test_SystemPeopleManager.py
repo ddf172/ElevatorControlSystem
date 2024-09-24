@@ -8,11 +8,6 @@ from Objects.Person import Person
 from Tests.conftest import settings
 
 
-@pytest.fixture
-def system_people_manager():
-    return SystemPeopleManager()
-
-
 def test_init(system_people_manager, settings):
     assert len(system_people_manager.containers) == settings.elevator.elevator_number + 1
     assert None in system_people_manager.containers
