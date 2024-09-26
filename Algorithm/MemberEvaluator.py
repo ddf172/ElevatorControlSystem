@@ -2,7 +2,7 @@ from Objects.Elevator import *
 from Objects.Member import Member
 from Settings.Settings import Settings
 from Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
-from typing import List, Dict, Callable
+from typing import Dict, Callable
 
 
 class MemberEvaluator:

@@ -1,5 +1,3 @@
-import pytest
-from Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
 from Objects.Person import AlgorithmPerson
 
 

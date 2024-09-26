@@ -2,7 +2,6 @@ import copy
 import time
 from typing import List, Dict
 from Objects.Member import Member
-from Objects.Person import Person
 from Objects.Elevator import *
 from Settings.Settings import Settings
 from Singleton import Singleton

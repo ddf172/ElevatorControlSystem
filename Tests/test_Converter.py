@@ -1,6 +1,4 @@
-import pytest
 import Managers.Converter as Converter
-from Managers.PeopleManager import PeopleContainer
 from Objects.Person import AlgorithmPerson, Person
 
 

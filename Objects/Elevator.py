@@ -1,5 +1,4 @@
 from Objects.PathState import PathState
-from Objects.Person import Person
 
 
 class Elevator:

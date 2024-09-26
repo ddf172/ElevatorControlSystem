@@ -1,9 +1,5 @@
-from operator import index
-
 import pytest
-
 from Managers.PeopleManager import PeopleContainer
-from Managers.SystemPeopleManager import SystemPeopleManager
 from Objects.Person import Person
 from Tests.conftest import settings
 

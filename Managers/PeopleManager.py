@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from collections.abc import Container
+from abc import ABC
 from typing import Union, TypeVar, Generic
 from Settings.Settings import Settings
 
