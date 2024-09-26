@@ -38,12 +38,11 @@ def test_convert_floor(evaluator_people_manager):
 
     people = {0: Person(0, 1, 10), 1: Person(0, 1, 11)}
     Converter._convert_floor(people, 0, 0, evaluator_people_manager)
-    assert len(evaluator_people_manager.containers[0].floors[0]) == 2
+    assert len(evaluator_people_manager.containers[0].floors[1]) == 2
 
-    assert_person_conversion(people[0], evaluator_people_manager.containers[0].floors[0][people[0].id], 0)
-    assert_person_conversion(people[1], evaluator_people_manager.containers[0].floors[0][people[1].id], 0)
+    assert_person_conversion(people[0], evaluator_people_manager.containers[0].floors[1][people[0].id], 0)
+    assert_person_conversion(people[1], evaluator_people_manager.containers[0].floors[1][people[1].id], 0)
 
-    print(evaluator_people_manager.containers[0].floors)
     for floor in evaluator_people_manager.containers[0].floors:
-        if floor != 0:
+        if floor != 1:
             assert len(evaluator_people_manager.containers[0].floors[floor]) == 0

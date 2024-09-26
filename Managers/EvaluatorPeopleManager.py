@@ -13,21 +13,11 @@ class EvaluatorPeopleManager(PeopleManager[AlgorithmPerson]):
         person.current_affiliation = where
 
     def remove_person(self, person: AlgorithmPerson, where: Union[None, int]) -> bool:
-        position = person.start_pos if where is None else person.destination
-        if person.id in self.containers[where].floors[position]:
-            self.containers[where].floors[position].pop(person.id)
-            self.containers[where].count -= 1
+        if super().remove_person(person, where):
             self.moved_elevator_people.add(person)
-
-            # affiliation = -1 means that the person is not in any container
             person.current_affiliation = -1
             return True
         return False
-
-    def move_person(self, person: AlgorithmPerson, from_where: Union[None, int], to_where: Union[None, int]) -> None:
-        if not self.remove_person(person, from_where):
-            raise IndexError("Person not found in the place")
-        self.add_person(person, to_where)
 
     def rollback(self):
         for person in self.moved_elevator_people:
