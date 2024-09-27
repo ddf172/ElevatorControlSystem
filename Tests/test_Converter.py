@@ -1,6 +1,6 @@
 import Managers.Converter as Converter
 from Objects.Person import AlgorithmPerson, Person
-from Managers.PeopleManager import PeopleContainer
+from Managers.PeopleManager import PeopleContainer, PeopleManager
 
 
 def assert_person_conversion(person, algorithm_person, where):
@@ -76,3 +76,41 @@ def test_convert_container(evaluator_people_manager):
     for floor in evaluator_people_manager.containers[0].floors:
         if floor != 1:
             assert len(evaluator_people_manager.containers[0].floors[floor]) == 0
+
+
+def test_convert(evaluator_people_manager, system_people_manager, settings):
+    system_people_manager.containers[None].add_person(Person(0, 1, 0), None)
+    system_people_manager.containers[None].add_person(Person(0, 1, 1), None)
+    system_people_manager.containers[None].add_person(Person(0, 1, 10), None)
+    system_people_manager.containers[None].add_person(Person(0, 1, 11), None)
+
+    system_people_manager.containers[0].add_person(Person(0, 1, 20), 0)
+    system_people_manager.containers[0].add_person(Person(0, 1, 21), 0)
+    system_people_manager.containers[0].add_person(Person(0, 1, 22), 0)
+    system_people_manager.containers[0].add_person(Person(0, 1, 23), 0)
+
+    evaluator_people_manager = Converter.convert(system_people_manager)
+    assert len(evaluator_people_manager.containers) == settings.elevator.elevator_number + 1
+    assert len(evaluator_people_manager.containers[None].floors) == settings.path.highest_floor - settings.path.lowest_floor + 1
+    assert len(evaluator_people_manager.containers[0].floors) == settings.path.highest_floor - settings.path.lowest_floor + 1
+
+    for floor in evaluator_people_manager.containers[None].floors:
+        if floor != 0:
+            assert len(evaluator_people_manager.containers[None].floors[floor]) == 0
+
+    for floor in evaluator_people_manager.containers[0].floors:
+        if floor != 1:
+            assert len(evaluator_people_manager.containers[0].floors[floor]) == 0
+
+    assert_person_conversion(system_people_manager.containers[None].floors[0][0], evaluator_people_manager.containers[None].floors[0][0], None)
+    assert_person_conversion(system_people_manager.containers[None].floors[0][1], evaluator_people_manager.containers[None].floors[0][1], None)
+    assert_person_conversion(system_people_manager.containers[None].floors[0][10], evaluator_people_manager.containers[None].floors[0][10], None)
+    assert_person_conversion(system_people_manager.containers[None].floors[0][11], evaluator_people_manager.containers[None].floors[0][11], None)
+
+    assert_person_conversion(system_people_manager.containers[0].floors[1][20], evaluator_people_manager.containers[0].floors[1][20], 0)
+    assert_person_conversion(system_people_manager.containers[0].floors[1][21], evaluator_people_manager.containers[0].floors[1][21], 0)
+    assert_person_conversion(system_people_manager.containers[0].floors[1][22], evaluator_people_manager.containers[0].floors[1][22], 0)
+    assert_person_conversion(system_people_manager.containers[0].floors[1][23], evaluator_people_manager.containers[0].floors[1][23], 0)
+
+    Person.person_id = 0
+    AlgorithmPerson.person_id = 0
