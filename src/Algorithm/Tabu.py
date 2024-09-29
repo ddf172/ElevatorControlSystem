@@ -1,8 +1,8 @@
-from Settings.Settings import Settings
+from src.Settings.Settings import Settings
 from random import choice, randint
 from enum import Enum
 from typing import List, Union
-from Objects.PathState import PathState
+from src.Objects.PathState import PathState
 
 
 class Floor(Enum):

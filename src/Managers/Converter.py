@@ -1,7 +1,7 @@
-from Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
-from Managers.SystemPeopleManager import SystemPeopleManager
-from Managers.PeopleManager import PeopleContainer
-from Objects.Person import AlgorithmPerson, Person
+from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
+from src.Managers.SystemPeopleManager import SystemPeopleManager
+from src.Managers.PeopleManager import PeopleContainer
+from src.Objects.Person import AlgorithmPerson, Person
 from typing import Union, Dict
 
 

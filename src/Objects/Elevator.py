@@ -1,4 +1,4 @@
-from Objects.PathState import PathState
+from src.Objects.PathState import PathState
 
 
 class Elevator:

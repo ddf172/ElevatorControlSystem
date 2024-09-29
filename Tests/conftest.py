@@ -1,8 +1,8 @@
 import pytest
-from Settings.Settings import Settings
-from Algorithm.Tabu import Tabu
-from Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
-from Managers.SystemPeopleManager import SystemPeopleManager
+from src.Settings.Settings import Settings
+from src.Algorithm.Tabu import Tabu
+from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
+from src.Managers.SystemPeopleManager import SystemPeopleManager
 
 
 @pytest.fixture

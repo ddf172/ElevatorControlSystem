@@ -1,7 +1,6 @@
 import pytest
-from Managers.PeopleManager import PeopleContainer
-from Objects.Person import Person
-from Tests.conftest import settings
+from src.Managers.PeopleManager import PeopleContainer
+from src.Objects.Person import Person
 
 
 def test_init(system_people_manager, settings):

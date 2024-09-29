@@ -1,4 +1,3 @@
-from Algorithm.Algorithm import *
 from Singleton import Singleton
 
 

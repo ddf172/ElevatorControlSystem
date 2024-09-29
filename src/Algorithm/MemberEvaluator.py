@@ -1,7 +1,7 @@
-from Objects.Elevator import *
-from Objects.Member import Member
-from Settings.Settings import Settings
-from Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
+from src.Objects.Elevator import *
+from src.Objects.Member import Member
+from src.Settings.Settings import Settings
+from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
 from typing import Dict, Callable
 
 

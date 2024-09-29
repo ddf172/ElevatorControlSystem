@@ -1,9 +1,9 @@
 import copy
 import time
 from typing import List, Dict
-from Objects.Member import Member
-from Objects.Elevator import *
-from Settings.Settings import Settings
+from src.Objects.Member import Member
+from src.Objects.Elevator import *
+from src.Settings.Settings import Settings
 from Singleton import Singleton
 from Tabu import Tabu
 from Crossover import Crossover

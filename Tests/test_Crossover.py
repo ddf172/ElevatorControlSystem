@@ -1,7 +1,7 @@
 import pytest
-from Algorithm.Crossover import Crossover
-from Objects.Elevator import AlgorithmElevator
-from Objects.Member import Member
+from src.Algorithm.Crossover import Crossover
+from src.Objects.Elevator import AlgorithmElevator
+from src.Objects.Member import Member
 from random import choice
 from Tests.test_Tabu import verify_path
 

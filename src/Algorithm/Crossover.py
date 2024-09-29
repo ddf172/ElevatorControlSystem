@@ -1,8 +1,8 @@
-from Objects.Member import Member
-from Objects.Elevator import AlgorithmElevator
-from Settings.Settings import Settings
+from src.Objects.Member import Member
+from src.Objects.Elevator import AlgorithmElevator
+from src.Settings.Settings import Settings
 from random import choice
-from Algorithm.Tabu import Tabu
+from src.Algorithm.Tabu import Tabu
 
 
 class Crossover:

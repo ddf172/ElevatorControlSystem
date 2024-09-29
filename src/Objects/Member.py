@@ -1,6 +1,6 @@
 from typing import List
-from Settings.Settings import Settings
-from Objects.Elevator import AlgorithmElevator
+from src.Settings.Settings import Settings
+from src.Objects.Elevator import AlgorithmElevator
 
 
 class Member:

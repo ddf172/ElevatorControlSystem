@@ -1,5 +1,5 @@
-from Managers.PeopleManager import PeopleManager
-from Objects.Person import AlgorithmPerson
+from src.Managers.PeopleManager import PeopleManager
+from src.Objects.Person import AlgorithmPerson
 from typing import Union
 
 

@@ -1,4 +1,4 @@
-from Objects.Person import AlgorithmPerson
+from src.Objects.Person import AlgorithmPerson
 
 
 def test_init(evaluator_people_manager):

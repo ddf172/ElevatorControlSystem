@@ -1,5 +1,5 @@
-from Managers.PeopleManager import PeopleManager, T
-from Objects.Person import Person
+from src.Managers.PeopleManager import PeopleManager
+from src.Objects.Person import Person
 
 
 class SystemPeopleManager(PeopleManager[Person]):
