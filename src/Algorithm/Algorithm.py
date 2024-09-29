@@ -4,7 +4,7 @@ from typing import List, Dict
 from src.Objects.Member import Member
 from src.Objects.Elevator import *
 from src.Settings.Settings import Settings
-from Singleton import Singleton
+from src.Patterns.Singleton import Singleton
 from Tabu import Tabu
 from Crossover import Crossover
 
