@@ -2,6 +2,7 @@ import pytest
 from src.Algorithm.MemberEvaluator import MemberEvaluator
 from src.Objects.Member import Member
 from src.Objects.Elevator import AlgorithmElevator
+from src.Objects.Person import AlgorithmPerson
 
 
 @pytest.fixture
@@ -21,3 +22,26 @@ def test_handle_fitness(member_evaluator, settings):
     multiplier = 2
     member_evaluator.handle_fitness(alg_elevator, key, multiplier)
     assert alg_elevator.fitness == settings.fitness.missed_destination_floor * multiplier
+
+
+def test_handle_move(member_evaluator, settings):
+    alg_elevator = AlgorithmElevator(0, 0)
+    alg_elevator.state.position = 0
+
+    person1 = AlgorithmPerson(0, 1, 0, 0)
+    person2 = AlgorithmPerson(1, 0, 0, 0)
+    person3 = AlgorithmPerson(2, 0, 0, 0)
+
+    member_evaluator.people_manager.add_person(person1, 0)
+    member_evaluator.people_manager.add_person(person2, 0)
+    member_evaluator.people_manager.add_person(person3, 0)
+
+    member_evaluator.handle_move(alg_elevator, 0)
+
+    assert person1.current_affiliation == 0
+    assert person2.current_affiliation == 0
+    assert person3.current_affiliation == 0
+    assert alg_elevator.state.position == 0
+    # Two people should be dropped out but elevator missed floor
+    proper_fitness = settings.fitness.move + 2 * member_evaluator.settings.fitness.missed_destination_floor
+    assert alg_elevator.fitness == proper_fitness
