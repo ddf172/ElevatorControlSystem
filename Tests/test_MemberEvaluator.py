@@ -1,8 +1,29 @@
 import pytest
 from src.Algorithm.MemberEvaluator import MemberEvaluator
-from src.Objects.Member import Member
 from src.Objects.Elevator import AlgorithmElevator
 from src.Objects.Person import AlgorithmPerson
+
+
+def setup_test_scenario(member_evaluator, elevator_position, people_data):
+    alg_elevator = AlgorithmElevator(0, 0)
+    alg_elevator.state.position = elevator_position
+
+    for person_id, start_floor, destination_floor, current_affiliation, original_affiliation in people_data:
+        person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation, person_id=person_id)
+        member_evaluator.people_manager.add_person(person, current_affiliation)
+
+    return alg_elevator
+
+
+def assert_test_results_for_moves(alg_elevator, member_evaluator, expected_position, expected_fitness,
+                                  expected_people_affiliation, container_id):
+    assert alg_elevator.state.position == expected_position
+    assert alg_elevator.fitness == expected_fitness
+
+    for floor in member_evaluator.people_manager.containers[container_id].floors.values():
+        for person in floor.values():
+            assert person.current_affiliation == expected_people_affiliation.get(person.id, person.current_affiliation), \
+                f"Mismatch for person {person.id}: expected {expected_people_affiliation.get(person.id)}, got {person.current_affiliation}"
 
 
 @pytest.fixture
@@ -25,93 +46,60 @@ def test_handle_fitness(member_evaluator, settings):
 
 
 def test_handle_move(member_evaluator, settings):
-    alg_elevator = AlgorithmElevator(0, 0)
-    alg_elevator.state.position = 0
-
-    person1 = AlgorithmPerson(0, 1, 0, 0)
-    person2 = AlgorithmPerson(1, 0, 0, 0)
-    person3 = AlgorithmPerson(2, 0, 0, 0)
-
-    member_evaluator.people_manager.add_person(person1, 0)
-    member_evaluator.people_manager.add_person(person2, 0)
-    member_evaluator.people_manager.add_person(person3, 0)
+    people_data = [
+        (0, 0, 1, 0, 0),
+        (1, 1, 0, 0, 0),
+        (2, 2, 0, 0, 0)
+    ]
+    alg_elevator = setup_test_scenario(member_evaluator, 0, people_data)
 
     member_evaluator.handle_move(alg_elevator, 0)
 
-    assert person1.current_affiliation == 0
-    assert person2.current_affiliation == 0
-    assert person3.current_affiliation == 0
-    assert alg_elevator.state.position == 0
-    # Two people should be dropped out but elevator missed floor
-    proper_fitness = settings.fitness.move + 2 * member_evaluator.settings.fitness.missed_destination_floor
-    assert alg_elevator.fitness == proper_fitness
+    expected_fitness = settings.fitness.move + 2 * settings.fitness.missed_destination_floor
+    expected_people_affiliation = {0: 0, 1: 0, 2: 0}
+    assert_test_results_for_moves(alg_elevator, member_evaluator, 0, expected_fitness, expected_people_affiliation, 0)
 
 
 def test_handle_move_down(member_evaluator, settings):
-    alg_elevator = AlgorithmElevator(0, 0)
-    alg_elevator.state.position = 2
-
-    person1 = AlgorithmPerson(3, 2, 0, 0)
-    person2 = AlgorithmPerson(3, 2, 0, 0)
-    person3 = AlgorithmPerson(3, 1, 0, 0)
-
-    member_evaluator.people_manager.add_person(person1, 0)
-    member_evaluator.people_manager.add_person(person2, 0)
-    member_evaluator.people_manager.add_person(person3, 0)
+    people_data = [
+        (0, 3, 2, 0, 0),
+        (1, 3, 2, 0, 0),
+        (2, 3, 1, 0, 0)
+    ]
+    alg_elevator = setup_test_scenario(member_evaluator, 2, people_data)
 
     member_evaluator.handle_move_down(alg_elevator, 0)
 
-    assert person1.current_affiliation == 0
-    assert person2.current_affiliation == 0
-    assert person3.current_affiliation == 0
-    assert alg_elevator.state.position == 1
-
-    # Two people should be dropped out but elevator missed floor
-    proper_fitness = settings.fitness.move + 2 * settings.fitness.missed_destination_floor
-    assert alg_elevator.fitness == proper_fitness
+    expected_fitness = settings.fitness.move + 2 * settings.fitness.missed_destination_floor
+    expected_people_affiliation = {0: 0, 1: 0, 2: 0}
+    assert_test_results_for_moves(alg_elevator, member_evaluator, 1, expected_fitness, expected_people_affiliation, 0)
 
 
 def test_handle_no_move(member_evaluator, settings):
-    alg_elevator = AlgorithmElevator(0, 0)
-    alg_elevator.state.position = 0
-
-    person1 = AlgorithmPerson(0, 0, 0, 0)
-    person2 = AlgorithmPerson(0, 0, 0, 0)
-    person3 = AlgorithmPerson(0, 0, 0, 0)
-
-    member_evaluator.people_manager.add_person(person1, 0)
-    member_evaluator.people_manager.add_person(person2, 0)
-    member_evaluator.people_manager.add_person(person3, 0)
+    people_data = [
+        (0, 0, 0, 0, 0),
+        (1, 0, 0, 0, 0),
+        (2, 0, 0, 0, 0)
+    ]
+    alg_elevator = setup_test_scenario(member_evaluator, 0, people_data)
 
     member_evaluator.handle_no_move(alg_elevator, 0)
 
-    assert person1.current_affiliation == 0
-    assert person2.current_affiliation == 0
-    assert person3.current_affiliation == 0
-    assert alg_elevator.state.position == 0
-
-    proper_fitness = settings.fitness.no_move + 3 * settings.fitness.no_move_with_passenger
-    assert alg_elevator.fitness == proper_fitness
+    expected_fitness = settings.fitness.no_move + 3 * settings.fitness.no_move_with_passenger
+    expected_people_affiliation = {0: 0, 1: 0, 2: 0}
+    assert_test_results_for_moves(alg_elevator, member_evaluator, 0, expected_fitness, expected_people_affiliation, 0)
 
 
 def test_handle_move_up(member_evaluator, settings):
-    alg_elevator = AlgorithmElevator(0, 0)
-    alg_elevator.state.position = 0
-
-    person1 = AlgorithmPerson(1, 0, 0, 0)
-    person2 = AlgorithmPerson(1, 0, 0, 0)
-    person3 = AlgorithmPerson(1, 0, 0, 0)
-
-    member_evaluator.people_manager.add_person(person1, 0)
-    member_evaluator.people_manager.add_person(person2, 0)
-    member_evaluator.people_manager.add_person(person3, 0)
+    people_data = [
+        (0, 1, 0, 0, 0),
+        (1, 1, 0, 0, 0),
+        (2, 1, 0, 0, 0)
+    ]
+    alg_elevator = setup_test_scenario(member_evaluator, 0, people_data)
 
     member_evaluator.handle_move_up(alg_elevator, 0)
 
-    assert person1.current_affiliation == 0
-    assert person2.current_affiliation == 0
-    assert person3.current_affiliation == 0
-    assert alg_elevator.state.position == 1
-
-    proper_fitness = settings.fitness.move + 3 * settings.fitness.missed_destination_floor
-    assert alg_elevator.fitness == proper_fitness
+    expected_fitness = settings.fitness.move + 3 * settings.fitness.missed_destination_floor
+    expected_people_affiliation = {0: 0, 1: 0, 2: 0}
+    assert_test_results_for_moves(alg_elevator, member_evaluator, 1, expected_fitness, expected_people_affiliation, 0)
