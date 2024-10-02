@@ -48,14 +48,16 @@ class MemberEvaluator:
 
         # Handle drop out
         people_to_drop = self.people_manager.containers[elevator_index].floors[alg_elevator.state.position]
-        for person in people_to_drop:
-            self.people_manager.remove_person(person, elevator_index)
+        people_to_drop_ids = list(people_to_drop.keys())
+        for person_id in people_to_drop_ids:
+            self.people_manager.remove_person(people_to_drop[person_id], elevator_index)
             self.handle_fitness(alg_elevator, 'drop_out')
 
         # Handle pick up
         people_to_pick = self.people_manager.containers[None].floors[alg_elevator.state.position]
-        for person in people_to_pick:
-            self.people_manager.move_person(person, None, elevator_index)
+        people_to_pick_ids = list(people_to_pick.keys())
+        for person_id in people_to_pick_ids:
+            self.people_manager.move_person(people_to_pick[person_id], None, elevator_index)
             self.handle_fitness(alg_elevator, 'pick_up')
 
     def evaluate_elevator_move(self, alg_elevator: AlgorithmElevator, elevator_index: int, move_index: int) -> None:
