@@ -69,3 +69,26 @@ def test_handle_move_down(member_evaluator, settings):
     # Two people should be dropped out but elevator missed floor
     proper_fitness = settings.fitness.move + 2 * settings.fitness.missed_destination_floor
     assert alg_elevator.fitness == proper_fitness
+
+
+def test_handle_no_move(member_evaluator, settings):
+    alg_elevator = AlgorithmElevator(0, 0)
+    alg_elevator.state.position = 0
+
+    person1 = AlgorithmPerson(0, 0, 0, 0)
+    person2 = AlgorithmPerson(0, 0, 0, 0)
+    person3 = AlgorithmPerson(0, 0, 0, 0)
+
+    member_evaluator.people_manager.add_person(person1, 0)
+    member_evaluator.people_manager.add_person(person2, 0)
+    member_evaluator.people_manager.add_person(person3, 0)
+
+    member_evaluator.handle_no_move(alg_elevator, 0)
+
+    assert person1.current_affiliation == 0
+    assert person2.current_affiliation == 0
+    assert person3.current_affiliation == 0
+    assert alg_elevator.state.position == 0
+
+    proper_fitness = settings.fitness.no_move + 3 * settings.fitness.no_move_with_passenger
+    assert alg_elevator.fitness == proper_fitness
