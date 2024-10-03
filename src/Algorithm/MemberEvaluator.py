@@ -57,6 +57,8 @@ class MemberEvaluator:
         people_to_pick = self.people_manager.containers[None].floors[alg_elevator.state.position]
         people_to_pick_ids = list(people_to_pick.keys())
         for person_id in people_to_pick_ids:
+            if self.people_manager.containers[elevator_index].count >= self.settings.elevator.elevator_capacity:
+                break
             self.people_manager.move_person(people_to_pick[person_id], None, elevator_index)
             self.handle_fitness(alg_elevator, 'pick_up')
 

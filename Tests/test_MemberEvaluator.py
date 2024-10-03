@@ -2,6 +2,7 @@ import pytest
 from src.Algorithm.MemberEvaluator import MemberEvaluator
 from src.Objects.Elevator import AlgorithmElevator
 from src.Objects.Person import AlgorithmPerson
+from src.Objects.Member import Member
 
 
 def setup_test_scenario(member_evaluator, elevator_position, people_data):
@@ -9,7 +10,8 @@ def setup_test_scenario(member_evaluator, elevator_position, people_data):
     alg_elevator.state.position = elevator_position
 
     for person_id, start_floor, destination_floor, current_affiliation, original_affiliation in people_data:
-        person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation, person_id=person_id)
+        person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation,
+                                 person_id=person_id)
         member_evaluator.people_manager.add_person(person, current_affiliation)
 
     return alg_elevator
@@ -23,7 +25,8 @@ def assert_test_results_for_moves(alg_elevator, member_evaluator, expected_posit
     for floor in member_evaluator.people_manager.containers[container_id].floors.values():
         for person in floor.values():
             assert person.current_affiliation == expected_people_affiliation.get(person.id, person.current_affiliation), \
-                f"Mismatch for person {person.id}: expected {expected_people_affiliation.get(person.id)}, got {person.current_affiliation}"
+                (f"Mismatch for person {person.id}: expected {expected_people_affiliation.get(person.id)},"
+                 f" got {person.current_affiliation}")
 
 
 @pytest.fixture
@@ -187,3 +190,60 @@ def test_evaluate_elevator_move(member_evaluator, settings):
         if person.current_affiliation == -1:
             removed_count += 1
     assert removed_count == 6
+
+
+# def test_evaluate_move(member_evaluator, settings):
+#     # Store initial settings
+#     initial_path_length = settings.path.path_length
+#     initial_elevator_number = settings.elevator.elevator_number
+#     initial_elevator_capacity = settings.elevator.elevator_capacity
+#     initial_lowest_floor = settings.path.lowest_floor
+#     initial_highest_floor = settings.path.highest_floor
+#
+#     # Set new settings
+#     settings.path.path_length = 5
+#     settings.elevator.elevator_number = 2
+#     settings.elevator.elevator_capacity = 5
+#     settings.path.lowest_floor = 0
+#     settings.path.highest_floor = 5
+#
+#     # Setup member
+#     member = Member()
+#     alg_elevator1 = AlgorithmElevator(0, 0)
+#     alg_elevator2 = AlgorithmElevator(2, 0)
+#     alg_elevator1.state.path = [0, 1, 2, -1, 2]
+#     alg_elevator2.state.path = [2, -1, 2, 0, 0]
+#     member.add_elevator(alg_elevator1)
+#     member.add_elevator(alg_elevator2)
+#
+#     # Setup people
+#     people_data = [
+#         (0, 0, 0, None, None),
+#         (1, 0, 0, None, None),
+#         (2, 0, 0, None, None),
+#         (3, 1, 0, 0, 0),
+#         (4, 1, 0, 0, 0),
+#         (5, 1, 0, 0, 0),
+#         (6, 2, 1, None, None),
+#         (7, 4, 1, 1, 1),
+#         (8, 3, 2, 1, 1)
+#     ]
+#
+#     for person_id, start_floor, destination_floor, current_affiliation, original_affiliation in people_data:
+#         person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation, person_id=person_id)
+#         member_evaluator.people_manager.add_person(person, current_affiliation)
+#
+#     # Move 1
+#     member_evaluator.evaluate_move(member, 0)
+#
+#     # Revert settings
+#     settings.path.path_length = initial_path_length
+#     settings.elevator.elevator_number = initial_elevator_number
+#     settings.elevator.elevator_capacity = initial_elevator_capacity
+#     settings.path.lowest_floor = initial_lowest_floor
+#     settings.path.highest_floor = initial_highest_floor
+#
+#
+#
+#
+# # TODO Make test that tests if there is capacity overflow in elevators
