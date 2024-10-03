@@ -70,12 +70,12 @@ class MemberEvaluator:
         # Handle journey time fitness
         self.handle_fitness(alg_elevator, 'journey_time', self.people_manager.containers[elevator_index].count)
 
-        # Handle waiting time fitness
-        self.handle_fitness(alg_elevator, 'waiting_time', self.people_manager.containers[None].count)
-
     def evaluate_move(self, member: Member, move_index: int) -> None:
         for elevator_index, alg_elevator in enumerate(member.elevators):
             self.evaluate_elevator_move(alg_elevator, elevator_index, move_index)
+
+        # Handle waiting time fitness
+        member.fitness += self.settings.fitness.waiting_time * self.people_manager.containers[None].count
 
     def evaluate(self, member: Member) -> None:
         original_positions_of_elevators = [elevator.state.position for elevator in member.elevators]
