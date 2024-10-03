@@ -26,7 +26,7 @@ class SettingsFitness:
         self.waiting_time = -2
         self.journey_time = -1
 
-    def __dict__(self):
+    def to_dict(self):
         return {
             "move": self.move,
             "door_movement": self.door_movement,

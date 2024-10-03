@@ -108,9 +108,6 @@ def test_handle_move_up(member_evaluator, settings):
 
 
 def test_handle_door_open(member_evaluator, settings):
-    # initial settings
-    initial_elevator_capacity = settings.elevator.elevator_capacity
-
     settings.elevator.elevator_capacity = 5
 
     # people data (person_id, start_floor, destination_floor, current_affiliation, original_affiliation)
@@ -132,9 +129,6 @@ def test_handle_door_open(member_evaluator, settings):
     expected_fitness = settings.fitness.door_movement + 3 * settings.fitness.drop_out + 2 * settings.fitness.pick_up
     expected_people_affiliation = {0: 0, 1: 0, 2: None, 3: -1, 4: -1, 5: -1, 6: 0, 7: 0, 8: 0}
     assert_test_results_for_moves(alg_elevator, member_evaluator, 0, expected_fitness, expected_people_affiliation, 0)
-
-    # Revert settings
-    settings.elevator.elevator_capacity = initial_elevator_capacity
 
 
 def test_evaluate_elevator_move(member_evaluator, settings):
@@ -202,14 +196,11 @@ def test_evaluate_elevator_move(member_evaluator, settings):
 
 
 # def test_evaluate_move(member_evaluator, settings):
-#     # Store initial settings
-#     initial_path_length = settings.path.path_length
-#     initial_elevator_number = settings.elevator.elevator_number
-#     initial_elevator_capacity = settings.elevator.elevator_capacity
-#     initial_lowest_floor = settings.path.lowest_floor
-#     initial_highest_floor = settings.path.highest_floor
+#     new_settings = settings.copy()
+#     if new_settings == settings:
+#         raise ValueError("Settings copy failed")
 #
-#     # Set new settings
+#     # Configure for test
 #     settings.path.path_length = 5
 #     settings.elevator.elevator_number = 2
 #     settings.elevator.elevator_capacity = 5
@@ -245,14 +236,17 @@ def test_evaluate_elevator_move(member_evaluator, settings):
 #     # Move 1
 #     member_evaluator.evaluate_move(member, 0)
 #
-#     # Revert settings
-#     settings.path.path_length = initial_path_length
-#     settings.elevator.elevator_number = initial_elevator_number
-#     settings.elevator.elevator_capacity = initial_elevator_capacity
-#     settings.path.lowest_floor = initial_lowest_floor
-#     settings.path.highest_floor = initial_highest_floor
+#     expected_fitness_elevator0 = 0
+#     expected_fitness_elevator0 += 3 * settings.fitness.no_move_with_passenger + 3 * settings.fitness.journey_time
+#     expected_fitness_elevator0 += settings.fitness.move
 #
+#     expected_fitness_elevator1 = 0
+#     expected_fitness_elevator1 += settings.fitness.pick_up + settings.fitness.drop_out + settings.fitness.door_movement
 #
+#     expected_fitness_member = settings.fitness.waiting_time * 3
 #
+#     expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: -1}
+#     assert_test_results_for_moves(alg_elevator1, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
+#     assert_test_results_for_moves(alg_elevator2, member_evaluator, 2, expected_fitness_elevator1, expected_people_affiliation, 1)
+#     assert member.fitness == expected_fitness_member
 #
-# # TODO Make test that tests if there is capacity overflow in elevators

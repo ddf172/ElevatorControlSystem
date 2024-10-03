@@ -18,7 +18,7 @@ class MemberEvaluator:
         }
 
     def handle_fitness(self, arg_elevator: AlgorithmElevator, key: str, multiplier: int = 1) -> None:
-        fitness_dict = self.settings.fitness.__dict__()
+        fitness_dict = self.settings.fitness.to_dict()
         arg_elevator.fitness += fitness_dict[key] * multiplier
 
     def handle_move(self, arg_elevator: AlgorithmElevator, elevator_index: int) -> None:
