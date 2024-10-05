@@ -1,26 +1,22 @@
-from src.Patterns.Singleton import Singleton
-from .SettingsSubclasses import *
+from .AbstractSettings import AbstractSettings
 
 
-class Settings(Singleton):
+class Settings(AbstractSettings):
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Settings, cls).__new__(cls)
+            cls._instance.__initialized = False
+        return cls._instance
 
     def __init__(self):
-        if hasattr(self, 'initialized'): return
-        self.initialized = True
+        if not self.__initialized:
+            super().__init__()
+            self.__initialized = True
 
-        self.path = SettingsPath()
-        self.fitness = SettingsFitness()
-        self.algorithm = SettingsAlgorithm()
-        self.elevator = SettingsElevator()
-
-    def get_path_length(self):
-        return self.path.path_length
-
-    def get_elevator_number(self):
-        return self.elevator.elevator_number
-
-    def get_lowest_floor(self):
-        return self.path.lowest_floor
-
-    def get_highest_floor(self):
-        return self.path.highest_floor
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = Settings()
+        return cls._instance
