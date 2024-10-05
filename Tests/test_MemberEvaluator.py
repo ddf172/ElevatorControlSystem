@@ -195,58 +195,112 @@ def test_evaluate_elevator_move(member_evaluator, settings):
     assert removed_count == 6
 
 
-# def test_evaluate_move(member_evaluator, settings):
-#     new_settings = settings.copy()
-#     if new_settings == settings:
-#         raise ValueError("Settings copy failed")
-#
-#     # Configure for test
-#     settings.path.path_length = 5
-#     settings.elevator.elevator_number = 2
-#     settings.elevator.elevator_capacity = 5
-#     settings.path.lowest_floor = 0
-#     settings.path.highest_floor = 5
-#
-#     # Setup member
-#     member = Member()
-#     alg_elevator1 = AlgorithmElevator(0, 0)
-#     alg_elevator2 = AlgorithmElevator(2, 0)
-#     alg_elevator1.state.path = [0, 1, 2, -1, 2]
-#     alg_elevator2.state.path = [2, -1, 2, 0, 0]
-#     member.add_elevator(alg_elevator1)
-#     member.add_elevator(alg_elevator2)
-#
-#     # Setup people
-#     people_data = [
-#         (0, 0, 0, None, None),
-#         (1, 0, 0, None, None),
-#         (2, 0, 0, None, None),
-#         (3, 1, 0, 0, 0),
-#         (4, 1, 0, 0, 0),
-#         (5, 1, 0, 0, 0),
-#         (6, 2, 1, None, None),
-#         (7, 4, 1, 1, 1),
-#         (8, 3, 2, 1, 1)
-#     ]
-#
-#     for person_id, start_floor, destination_floor, current_affiliation, original_affiliation in people_data:
-#         person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation, person_id=person_id)
-#         member_evaluator.people_manager.add_person(person, current_affiliation)
-#
-#     # Move 1
-#     member_evaluator.evaluate_move(member, 0)
-#
-#     expected_fitness_elevator0 = 0
-#     expected_fitness_elevator0 += 3 * settings.fitness.no_move_with_passenger + 3 * settings.fitness.journey_time
-#     expected_fitness_elevator0 += settings.fitness.move
-#
-#     expected_fitness_elevator1 = 0
-#     expected_fitness_elevator1 += settings.fitness.pick_up + settings.fitness.drop_out + settings.fitness.door_movement
-#
-#     expected_fitness_member = settings.fitness.waiting_time * 3
-#
-#     expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: -1}
-#     assert_test_results_for_moves(alg_elevator1, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
-#     assert_test_results_for_moves(alg_elevator2, member_evaluator, 2, expected_fitness_elevator1, expected_people_affiliation, 1)
-#     assert member.fitness == expected_fitness_member
-#
+def test_evaluate_move(member_evaluator, settings):
+
+    # Configure for test
+    settings.path.path_length = 5
+    settings.elevator.elevator_number = 2
+    settings.elevator.elevator_capacity = 5
+    settings.path.lowest_floor = 0
+    settings.path.highest_floor = 5
+
+    # Setup member
+    member = Member()
+    alg_elevator0 = AlgorithmElevator(0, 0)
+    alg_elevator1 = AlgorithmElevator(2, 0)
+    alg_elevator0.state.path = [0, 1, 2, -1, 2]
+    alg_elevator1.state.path = [2, -1, 2, 0, 0]
+    member.add_elevator(alg_elevator0)
+    member.add_elevator(alg_elevator1)
+
+    # Setup people
+    people_data = [
+        (0, 0, 0, None, None),
+        (1, 0, 0, None, None),
+        (2, 0, 0, None, None),
+        (3, 1, 0, 0, 0),
+        (4, 1, 0, 0, 0),
+        (5, 1, 0, 0, 0),
+        (6, 2, 1, None, None),
+        (7, 4, 1, 1, 1),
+        (8, 3, 2, 1, 1)
+    ]
+
+    for person_id, start_floor, destination_floor, current_affiliation, original_affiliation in people_data:
+        person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation, person_id=person_id)
+        member_evaluator.people_manager.add_person(person, current_affiliation)
+
+    # Move 1
+    member_evaluator.evaluate_move(member, 0)
+
+    expected_fitness_elevator0 = 0
+    expected_fitness_elevator0 += 3 * settings.fitness.no_move_with_passenger + 3 * settings.fitness.journey_time
+
+    expected_fitness_elevator1 = 0
+    expected_fitness_elevator1 += settings.fitness.pick_up + settings.fitness.drop_out + settings.fitness.door_movement
+    expected_fitness_elevator1 += 2 * settings.fitness.journey_time
+
+    expected_fitness_member = settings.fitness.waiting_time * 3
+
+    expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: -1}
+    assert_test_results_for_moves(alg_elevator0, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
+    assert_test_results_for_moves(alg_elevator1, member_evaluator, 2, expected_fitness_elevator1, expected_people_affiliation, 1)
+    assert member.fitness == expected_fitness_member
+
+    # Move 2
+    member_evaluator.evaluate_move(member, 1)
+
+    expected_fitness_elevator0 += settings.fitness.move + 3 * settings.fitness.missed_destination_floor
+    expected_fitness_elevator0 += 3 * settings.fitness.journey_time
+
+    expected_fitness_elevator1 += settings.fitness.move + 2 * settings.fitness.journey_time
+
+    expected_fitness_member += settings.fitness.waiting_time * 3
+
+    expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: -1}
+    assert_test_results_for_moves(alg_elevator0, member_evaluator, 1, expected_fitness_elevator0, expected_people_affiliation, 0)
+    assert_test_results_for_moves(alg_elevator1, member_evaluator, 1, expected_fitness_elevator1, expected_people_affiliation, 1)
+    assert member.fitness == expected_fitness_member
+
+    # Move 3
+    member_evaluator.evaluate_move(member, 2)
+
+    expected_fitness_elevator0 += settings.fitness.door_movement + 3 * settings.fitness.journey_time
+
+    expected_fitness_elevator1 += settings.fitness.door_movement + 2 * settings.fitness.drop_out
+
+    expected_fitness_member += settings.fitness.waiting_time * 3
+
+    expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: -1, 7: -1, 8: -1}
+    assert_test_results_for_moves(alg_elevator0, member_evaluator, 1, expected_fitness_elevator0, expected_people_affiliation, 0)
+    assert_test_results_for_moves(alg_elevator1, member_evaluator, 1, expected_fitness_elevator1, expected_people_affiliation, 1)
+    assert member.fitness == expected_fitness_member
+
+    # Move 4
+    # Elevator 0 position: 1, Elevator 1 position: 1
+    member_evaluator.evaluate_move(member, 3)
+
+    expected_fitness_elevator0 += settings.fitness.move
+    expected_fitness_elevator0 += 3 * settings.fitness.journey_time
+
+    expected_fitness_elevator1 += settings.fitness.no_move
+
+    expected_fitness_member += settings.fitness.waiting_time * 3
+
+    expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: -1, 7: -1, 8: -1}
+    assert_test_results_for_moves(alg_elevator0, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
+    assert_test_results_for_moves(alg_elevator1, member_evaluator, 1, expected_fitness_elevator1, expected_people_affiliation, 1)
+    assert member.fitness == expected_fitness_member
+
+    # Move 5
+    member_evaluator.evaluate_move(member, 4)
+
+    expected_fitness_elevator0 += settings.fitness.door_movement + 3 * settings.fitness.drop_out
+    expected_fitness_elevator0 += 3 * settings.fitness.pick_up + 3 * settings.fitness.journey_time
+
+    expected_fitness_elevator1 += settings.fitness.no_move
+
+    expected_people_affiliation = {0: 0, 1: 0, 2: 0, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1}
+    assert_test_results_for_moves(alg_elevator0, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
+    assert_test_results_for_moves(alg_elevator1, member_evaluator, 1, expected_fitness_elevator1, expected_people_affiliation, 1)
+    assert member.fitness == expected_fitness_member
