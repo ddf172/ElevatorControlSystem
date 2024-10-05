@@ -1,5 +1,5 @@
 import pytest
-from src.Settings.Settings import Settings
+from src.Settings.SettingsForTests import SettingsForTests
 from src.Algorithm.Tabu import Tabu
 from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
 from src.Managers.SystemPeopleManager import SystemPeopleManager
@@ -7,7 +7,7 @@ from src.Managers.SystemPeopleManager import SystemPeopleManager
 
 @pytest.fixture
 def settings():
-    return Settings()
+    return SettingsForTests()
 
 
 @pytest.fixture
