@@ -1,14 +1,21 @@
 from src.Objects.Elevator import *
 from src.Objects.Member import Member
+from src.Settings.AbstractSettings import AbstractSettings
 from src.Settings.Settings import Settings
 from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional, TypeVar
+
+
+T = TypeVar('T', bound=AbstractSettings)
 
 
 class MemberEvaluator:
-    def __init__(self, people_manager: EvaluatorPeopleManager):
+    def __init__(self, people_manager: EvaluatorPeopleManager, settings: Optional[T] = None) -> None:
         self.people_manager = people_manager
-        self.settings = Settings()
+        if settings is None:
+            self.settings = Settings()
+        else:
+            self.settings = settings
 
         self.move_handlers: Dict[int, Callable[[AlgorithmElevator, int], None]] = {
             -1: self.handle_move_down,

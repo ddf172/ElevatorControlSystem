@@ -31,7 +31,11 @@ def assert_test_results_for_moves(alg_elevator, member_evaluator, expected_posit
 
 @pytest.fixture
 def member_evaluator(evaluator_people_manager):
-    return MemberEvaluator(evaluator_people_manager)
+    return MemberEvaluator(evaluator_people_manager, None)
+
+
+def member_elevator_with_fixed_settings(evaluator_people_manager, fixed_settings):
+    return MemberEvaluator(evaluator_people_manager, fixed_settings)
 
 
 def test_handle_fitness(member_evaluator, settings):
@@ -107,8 +111,10 @@ def test_handle_move_up(member_evaluator, settings):
     assert_test_results_for_moves(alg_elevator, member_evaluator, 1, expected_fitness, expected_people_affiliation, 0)
 
 
-def test_handle_door_open(member_evaluator, settings):
+def test_handle_door_open(evaluator_people_manager, settings):
     settings.elevator.elevator_capacity = 5
+
+    member_evaluator = member_elevator_with_fixed_settings(evaluator_people_manager, settings)
 
     # people data (person_id, start_floor, destination_floor, current_affiliation, original_affiliation)
     people_data = [
@@ -131,7 +137,11 @@ def test_handle_door_open(member_evaluator, settings):
     assert_test_results_for_moves(alg_elevator, member_evaluator, 0, expected_fitness, expected_people_affiliation, 0)
 
 
-def test_evaluate_elevator_move(member_evaluator, settings):
+def test_evaluate_elevator_move(evaluator_people_manager ,settings):
+    settings.path.path_length = 5
+
+    member_evaluator = member_elevator_with_fixed_settings(evaluator_people_manager, settings)
+
     people_data = [
         (0, 0, 0, None, None),
         (1, 0, 0, None, None),
@@ -144,9 +154,7 @@ def test_evaluate_elevator_move(member_evaluator, settings):
         (8, 2, 1, 0, 0)
     ]
     alg_elevator = setup_test_scenario(member_evaluator, 0, people_data)
-    if settings.path.path_length < 5:
-        raise ValueError("Test scenario requires path length of at least 5")
-    alg_elevator.state.path = [0, 1, 2, -1, 2] + [0] * (settings.path.path_length - 5)
+    alg_elevator.state.path = [0, 1, 2, -1, 2] + [0]
 
     member_evaluator.evaluate_elevator_move(alg_elevator, 0, 0)
 
@@ -195,7 +203,7 @@ def test_evaluate_elevator_move(member_evaluator, settings):
     assert removed_count == 6
 
 
-def test_evaluate_move(member_evaluator, settings):
+def test_evaluate_move(evaluator_people_manager, settings):
 
     # Configure for test
     settings.path.path_length = 5
@@ -212,6 +220,8 @@ def test_evaluate_move(member_evaluator, settings):
     alg_elevator1.state.path = [2, -1, 2, 0, 0]
     member.add_elevator(alg_elevator0)
     member.add_elevator(alg_elevator1)
+
+    member_evaluator = member_elevator_with_fixed_settings(evaluator_people_manager, settings)
 
     # Setup people
     people_data = [
@@ -303,4 +313,71 @@ def test_evaluate_move(member_evaluator, settings):
     expected_people_affiliation = {0: 0, 1: 0, 2: 0, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1}
     assert_test_results_for_moves(alg_elevator0, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
     assert_test_results_for_moves(alg_elevator1, member_evaluator, 1, expected_fitness_elevator1, expected_people_affiliation, 1)
+    assert member.fitness == expected_fitness_member
+
+
+def test_evaluate(evaluator_people_manager, settings):
+
+    # Configure for test
+    settings.path.path_length = 5
+    settings.elevator.elevator_number = 2
+    settings.elevator.elevator_capacity = 5
+    settings.path.lowest_floor = 0
+    settings.path.highest_floor = 5
+
+    member_evaluator = member_elevator_with_fixed_settings(evaluator_people_manager, settings)
+
+    # Setup member
+    member = Member()
+    alg_elevator0 = AlgorithmElevator(0, 0)
+    alg_elevator1 = AlgorithmElevator(2, 0)
+    alg_elevator0.state.path = [0, 1, 2, -1, 2]
+    alg_elevator1.state.path = [2, -1, 2, 0, 0]
+    member.add_elevator(alg_elevator0)
+    member.add_elevator(alg_elevator1)
+
+    # Setup people
+    people_data = [
+        (0, 0, 0, None, None),
+        (1, 0, 0, None, None),
+        (2, 0, 0, None, None),
+        (3, 1, 0, 0, 0),
+        (4, 1, 0, 0, 0),
+        (5, 1, 0, 0, 0),
+        (6, 2, 1, None, None),
+        (7, 4, 1, 1, 1),
+        (8, 3, 2, 1, 1)
+    ]
+
+    for person_id, start_floor, destination_floor, current_affiliation, original_affiliation in people_data:
+        person = AlgorithmPerson(start_floor, destination_floor, current_affiliation, original_affiliation, person_id=person_id)
+        member_evaluator.people_manager.add_person(person, current_affiliation)
+
+    member_evaluator.evaluate(member)
+
+    expected_fitness_elevator0 = 0
+    expected_fitness_elevator1 = 0
+    expected_fitness_member = 0
+
+    expected_fitness_elevator0 += 2 * settings.fitness.door_movement
+    expected_fitness_elevator0 += 15 * settings.fitness.journey_time
+    expected_fitness_elevator0 += 3 * settings.fitness.no_move_with_passenger
+    expected_fitness_elevator0 += 2 * settings.fitness.move
+    expected_fitness_elevator0 += 3 * settings.fitness.missed_destination_floor
+    expected_fitness_elevator0 += 3 * settings.fitness.drop_out
+    expected_fitness_elevator0 += 3 * settings.fitness.pick_up
+
+    expected_fitness_elevator1 += 2 * settings.fitness.door_movement
+    expected_fitness_elevator1 += 4 * settings.fitness.journey_time
+    expected_fitness_elevator1 += 1 * settings.fitness.pick_up
+    expected_fitness_elevator1 += 3 * settings.fitness.drop_out
+    expected_fitness_elevator1 += settings.fitness.move
+    expected_fitness_elevator1 += 2 * settings.fitness.no_move
+
+    expected_fitness_member += 12 * settings.fitness.waiting_time
+
+    expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: None, 7: 1, 8: 1}
+
+    assert_test_results_for_moves(alg_elevator0, member_evaluator, 0, expected_fitness_elevator0, expected_people_affiliation, 0)
+    assert_test_results_for_moves(alg_elevator1, member_evaluator, 2, expected_fitness_elevator1, expected_people_affiliation, 1)
     assert member.fitness == expected_fitness_member
