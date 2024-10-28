@@ -1,4 +1,4 @@
-from app.src.Settings.SettingsForTests import SettingsForTests
+from src.Settings.SettingsForTests import SettingsForTests
 
 
 def test_test_settings():

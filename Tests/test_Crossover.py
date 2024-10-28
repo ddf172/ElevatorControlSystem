@@ -1,9 +1,9 @@
 import pytest
-from app.src.Algorithm.Crossover import Crossover
-from app.src.Objects.Elevator import AlgorithmElevator
-from app.src.Objects.Member import Member
+from src.Algorithm.Crossover import Crossover
+from src.Objects.Elevator import AlgorithmElevator
+from src.Objects.Member import Member
 from random import choice
-from app.Tests.test_Tabu import verify_path
+from Tests.test_Tabu import verify_path
 
 
 @pytest.fixture

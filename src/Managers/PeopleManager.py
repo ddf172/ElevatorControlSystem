@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Union, TypeVar, Generic
-from app.src.Settings.Settings import Settings
+from src.Settings.Settings import Settings
 
 T = TypeVar('T', bound='Person')
 

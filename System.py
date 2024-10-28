@@ -1,4 +1,4 @@
-from app.src.Patterns.Singleton import Singleton
+from src.Patterns.Singleton import Singleton
 
 
 class System(Singleton):

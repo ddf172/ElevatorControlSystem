@@ -1,5 +1,5 @@
 from System import *
-from app.Gui import Application
+from Gui import Application
 import tkinter as tk
 
 elevators_data = [

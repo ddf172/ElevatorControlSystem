@@ -1,4 +1,4 @@
-from app.src.Settings.Settings import Settings
+from src.Settings.Settings import Settings
 
 
 def test_settings():
