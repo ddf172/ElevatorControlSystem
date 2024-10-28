@@ -1,8 +1,8 @@
 import pytest
-from src.Algorithm.MemberEvaluator import MemberEvaluator
-from src.Objects.Elevator import AlgorithmElevator
-from src.Objects.Person import AlgorithmPerson
-from src.Objects.Member import Member
+from app.src.Algorithm.MemberEvaluator import MemberEvaluator
+from app.src.Objects.Elevator import AlgorithmElevator
+from app.src.Objects.Person import AlgorithmPerson
+from app.src.Objects.Member import Member
 
 
 def setup_test_scenario(member_evaluator, elevator_position, people_data):
@@ -137,7 +137,7 @@ def test_handle_door_open(evaluator_people_manager, settings):
     assert_test_results_for_moves(alg_elevator, member_evaluator, 0, expected_fitness, expected_people_affiliation, 0)
 
 
-def test_evaluate_elevator_move(evaluator_people_manager ,settings):
+def test_evaluate_elevator_move(evaluator_people_manager, settings):
     settings.path.path_length = 5
 
     member_evaluator = member_elevator_with_fixed_settings(evaluator_people_manager, settings)

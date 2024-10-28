@@ -1,6 +1,6 @@
-import src.Managers.Converter as Converter
-from src.Objects.Person import AlgorithmPerson, Person
-from src.Managers.PeopleManager import PeopleContainer
+import app.src.Managers.Converter as Converter
+from app.src.Objects.Person import AlgorithmPerson, Person
+from app.src.Managers.PeopleManager import PeopleContainer
 
 
 def assert_person_conversion(person, algorithm_person, where):

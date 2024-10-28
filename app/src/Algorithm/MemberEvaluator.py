@@ -1,8 +1,8 @@
-from src.Objects.Elevator import *
-from src.Objects.Member import Member
-from src.Settings.AbstractSettings import AbstractSettings
-from src.Settings.Settings import Settings
-from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
+from app.src.Objects.Member import Member
+from app.src.Settings.AbstractSettings import AbstractSettings
+from app.src.Settings.Settings import Settings
+from app.src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
+from app.src.Objects.Elevator import AlgorithmElevator
 from typing import Dict, Callable, Optional, TypeVar
 
 

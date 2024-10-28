@@ -1,5 +1,5 @@
 from random import randint
-from src.Settings.Settings import Settings
+from app.src.Settings.Settings import Settings
 from typing import Union
 
 

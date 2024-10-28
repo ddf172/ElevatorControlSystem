@@ -1,5 +1,5 @@
-from src.Managers.PeopleManager import PeopleManager
-from src.Objects.Person import Person
+from app.src.Managers.PeopleManager import PeopleManager
+from app.src.Objects.Person import Person
 
 
 class SystemPeopleManager(PeopleManager[Person]):

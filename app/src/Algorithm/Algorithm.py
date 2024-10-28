@@ -1,10 +1,11 @@
 import copy
 import time
 from typing import List, Dict
-from src.Objects.Member import Member
-from src.Objects.Elevator import *
-from src.Settings.Settings import Settings
-from src.Patterns.Singleton import Singleton
+from app.src.Objects.Member import Member
+from app.src.Settings.Settings import Settings
+from app.src.Patterns.Singleton import Singleton
+from app.src.Objects.Elevator import *
+from app.src.Objects.Person import Person
 from Tabu import Tabu
 from Crossover import Crossover
 
