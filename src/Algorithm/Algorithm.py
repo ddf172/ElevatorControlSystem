@@ -1,6 +1,5 @@
 import copy
-import time
-from typing import List, Dict
+from typing import List
 
 from src.Objects.Member import Member
 from src.Objects.Elevator import *
@@ -11,7 +10,6 @@ from Crossover import Crossover
 from src.Algorithm.MemberEvaluator import MemberEvaluator
 from src.Managers.Converter import convert
 from src.Managers.SystemPeopleManager import SystemPeopleManager
-from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
 
 
 class Algorithm(Singleton):
@@ -21,7 +19,6 @@ class Algorithm(Singleton):
         self.initialized = True
 
         self.elevators = elevators
-
         self.people_manager = people_manager
         self.population = []
         self.best_member = Member()
@@ -82,19 +79,19 @@ class Algorithm(Singleton):
                 tabu.mutate_elevator_path()
                 elevator.state.path = tabu.get_path()
 
-    def run_algorithm(self):
+    def run_algorithm(self) -> Member:
+        # Initialize algorithm
         self.generate_population()
-        iterations = self.generations
+        iterations = self.settings.algorithm.iterations
+
         while iterations > 0:
             iterations -= 1
-            start = time.time()
             self.crossover_population()
             self.mutate_population()
-            self.validate_population()
+            # self.validate_and_repair_population()
             self.evaluate_population()
             self.select_population()
             self.save_best_member()
-            end = time.time()
             # print(end - start, "one interation time, iterations left:", iterations, "best fitness: ", self.best_member.fitness)
 
         return self.best_member
