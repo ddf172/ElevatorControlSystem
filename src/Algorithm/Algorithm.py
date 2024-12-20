@@ -1,30 +1,34 @@
 import copy
 import time
 from typing import List, Dict
+
 from src.Objects.Member import Member
 from src.Objects.Elevator import *
 from src.Settings.Settings import Settings
 from src.Patterns.Singleton import Singleton
 from Tabu import Tabu
 from Crossover import Crossover
+from src.Algorithm.MemberEvaluator import MemberEvaluator
+from src.Managers.Converter import convert
+from src.Managers.SystemPeopleManager import SystemPeopleManager
+from src.Managers.EvaluatorPeopleManager import EvaluatorPeopleManager
 
 
 class Algorithm(Singleton):
 
-    def __init__(self, elevators: List[SystemElevator], people: Dict[int, List[Person]]):
+    def __init__(self, elevators: List[SystemElevator], people_manager: SystemPeopleManager):
         if hasattr(self, 'initialized'): return
         self.initialized = True
 
         self.elevators = elevators
-        self.people = people
 
+        self.people_manager = people_manager
         self.population = []
         self.best_member = Member()
         self.settings = Settings()
         self.crossover = Crossover()
 
     def generate_member(self) -> Member:
-        # Divide into more functions
         member = Member()
         for elevator in self.elevators:
             tabu = Tabu([], elevator.state.position, elevator.state.last_move_from_prev_iteration)
@@ -59,63 +63,10 @@ class Algorithm(Singleton):
         self.population = self.population[0:self.settings.algorithm.population_size]
 
     def evaluate_population(self):
+        evaluator_people_manager = convert(self.people_manager)
+        evaluator = MemberEvaluator(evaluator_people_manager, self.settings)
         for member in self.population:
-            people_copy = copy.deepcopy(self.people)
-            member.fitness = 0
-            elevators_copy = copy.deepcopy(member.elevators)
-            for index in range(self.path_length):
-                for elevator in member.elevators:
-                    move = elevator.path[index]
-
-                    if move == 1 or move == -1:
-                        missed_count = 0
-                        for person in elevator.floors:
-                            if person.destination == elevator.curr_position:
-                                missed_count += 1
-
-                        elevator.fitness += missed_count * self.missed_destination_floor
-                        elevator.fitness += self.journey_time * len(elevator.floors)
-                        elevator.fitness += self.move_penalty
-
-                        elevator.curr_position += move
-
-                    elif move == 0:
-                        elevator.fitness += self.no_move
-                        elevator.fitness += len(elevator.floors) * self.no_move_with_passenger
-                        elevator.fitness += len(elevator.floors) * self.journey_time
-
-                    else:
-                        elevator.fitness += self.door_movement
-                        people_to_remove = []
-                        for person_index, person in enumerate(elevator.floors):
-                            if person.destination == elevator.curr_position:
-                                people_to_remove.append(person_index)
-
-                        people_to_remove = sorted(people_to_remove, reverse=True)
-
-                        for person_index in people_to_remove:
-                            elevator.floors.pop(person_index)
-                            elevator.fitness += self.drop_out
-
-                        elevator.fitness += len(elevator.floors) * self.journey_time
-
-                        people_entering_elevator = []
-                        for person_index, person in enumerate(people_copy):
-                            if len(elevator.floors) == elevator.capacity:
-                                break
-                            if person.start_pos == elevator.curr_position:
-                                people_entering_elevator.append(person_index)
-                                elevator.floors.append(person)
-                                elevator.fitness += self.pick_up
-
-                        people_entering_elevator = sorted(people_entering_elevator, reverse=True)
-                        for person_index in people_entering_elevator:
-                            people_copy.pop(person_index)
-                member.fitness += len(people_copy) * self.waiting_time
-
-            for elevator in member.elevators:
-                member.fitness += elevator.fitness
-            member.elevators = elevators_copy
+            evaluator.evaluate(member)
 
     def save_best_member(self) -> None:
         # Assuming that the population is sorted by fitness in descending order
