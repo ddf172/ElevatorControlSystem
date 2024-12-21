@@ -28,7 +28,8 @@ from Gui import Application
 #   system.run_system()
 
 def main():
-    print(123)
+    system = System()
+    system.run_system()
 
 
 if __name__ == "__main__":

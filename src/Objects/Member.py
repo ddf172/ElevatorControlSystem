@@ -21,5 +21,5 @@ class Member:
 
     def get_elevator(self, index: int) -> AlgorithmElevator:
         if index < 0 or index >= len(self.elevators):
-            raise (IndexError("Index out of range"))
+            raise (IndexError("Index out of range, index: " + str(index)))
         return self.elevators[index]

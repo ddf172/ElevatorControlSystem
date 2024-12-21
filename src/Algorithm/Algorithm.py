@@ -4,24 +4,20 @@ from typing import List
 from src.Objects.Member import Member
 from src.Objects.Elevator import *
 from src.Settings.Settings import Settings
-from src.Patterns.Singleton import Singleton
-from Tabu import Tabu
-from Crossover import Crossover
+from src.Algorithm.Tabu import Tabu
+from src.Algorithm.Crossover import Crossover
 from src.Algorithm.MemberEvaluator import MemberEvaluator
 from src.Managers.Converter import convert
 from src.Managers.SystemPeopleManager import SystemPeopleManager
 
 
-class Algorithm(Singleton):
+class Algorithm:
 
     def __init__(self, elevators: List[SystemElevator], people_manager: SystemPeopleManager):
-        if hasattr(self, 'initialized'): return
-        self.initialized = True
-
         self.elevators = elevators
         self.people_manager = people_manager
         self.population = []
-        self.best_member = Member()
+        self.best_member = None
         self.settings = Settings()
         self.crossover = Crossover()
 
