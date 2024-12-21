@@ -51,8 +51,6 @@ class MemberEvaluator:
         alg_elevator.state.position += 1
 
     def handle_door_open(self, alg_elevator: AlgorithmElevator, elevator_index: int) -> None:
-        self.handle_fitness(alg_elevator, 'door_movement')
-
         # Handle drop out
         people_to_drop = self.people_manager.containers[elevator_index].floors[alg_elevator.state.position]
         people_to_drop_ids = list(people_to_drop.keys())
@@ -69,6 +67,12 @@ class MemberEvaluator:
             self.people_manager.move_person(people_to_pick[person_id], None, elevator_index)
             self.handle_fitness(alg_elevator, 'pick_up')
 
+        # Handle door movement
+        if (len(people_to_drop) + len(people_to_pick)) == 0:
+            self.handle_fitness(alg_elevator, 'useless_door_movement')
+        else:
+            self.handle_fitness(alg_elevator, 'door_movement')
+
     def evaluate_elevator_move(self, alg_elevator: AlgorithmElevator, elevator_index: int, move_index: int) -> None:
         move = alg_elevator.state.path[move_index]
         handler = self.move_handlers.get(move)
@@ -84,8 +88,15 @@ class MemberEvaluator:
         # Handle waiting time fitness
         member.fitness += self.settings.fitness.waiting_time * self.people_manager.containers[None].count
 
-    def evaluate(self, member: Member) -> None:
+    @staticmethod
+    def reset_fitness(member: Member) -> None:
+        for elevator in member.elevators:
+            elevator.fitness = 0
         member.fitness = 0
+
+    def evaluate(self, member: Member) -> None:
+        self.reset_fitness(member)
+
         original_positions_of_elevators = [elevator.state.position for elevator in member.elevators]
         for move_index in range(self.settings.path.path_length):
             self.evaluate_move(member, move_index)

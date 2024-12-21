@@ -18,6 +18,7 @@ class SettingsFitness:
     def __init__(self):
         self.move = -1
         self.door_movement = -1
+        self.useless_door_movement = -100
         self.no_move = 0
         self.no_move_with_passenger = -10
         self.missed_destination_floor = -100
@@ -36,16 +37,17 @@ class SettingsFitness:
             "drop_out": self.drop_out,
             "pick_up": self.pick_up,
             "waiting_time": self.waiting_time,
-            "journey_time": self.journey_time
+            "journey_time": self.journey_time,
+            "useless_door_movement": self.useless_door_movement
         }
 
 
 class SettingsAlgorithm:
     def __init__(self):
         self.iterations = 50
-        self.population_size = 100
+        self.population_size = 200
         self.generations = 50
-        self.mutation_rate = 50  # 0 - 1000
+        self.mutation_rate = 0  # 0 - 1000
 
 
 class SettingsElevator:
