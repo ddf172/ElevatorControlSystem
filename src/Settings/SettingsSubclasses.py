@@ -42,8 +42,8 @@ class SettingsFitness:
 
 class SettingsAlgorithm:
     def __init__(self):
-        self.iterations = 100
-        self.population_size = 200
+        self.iterations = 50
+        self.population_size = 100
         self.generations = 50
         self.mutation_rate = 50  # 0 - 1000
 

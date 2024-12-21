@@ -4,24 +4,31 @@ from src.Settings.Settings import Settings
 import random
 from src.Objects.Person import Person
 from src.Algorithm.Algorithm import Algorithm
+from typing import List
 
 
 class System:
     # Configuration
     # 0 - never
-    new_person_in_moves = 4
-    how_many_people_at_once = 1
+    new_person_in_moves = 0
+    how_many_people_at_once = 0
     how_often_generate_new_path = 5
     runtime = 100
 
-    def __init__(self):
+    def __init__(self, elevators: List[SystemElevator] =None, people: List[Person] = None):
+
         self.people_manager = SystemPeopleManager()
         self.settings = Settings()
         self.transported_people = 0
-        self.elevators = []
+        self.elevators = elevators
 
-        for i in range(self.settings.elevator.elevator_number):
-            self.elevators.append(SystemElevator(0))
+        if elevators is None:
+            for i in range(self.settings.elevator.elevator_number):
+                self.elevators.append(SystemElevator(0))
+
+        if people is not None:
+            for person in people:
+                self.people_manager.add_person(person, None)
 
     def add_person(self, start_pos=None, destination=None) -> None:
         if start_pos is None:

@@ -85,9 +85,13 @@ class MemberEvaluator:
         member.fitness += self.settings.fitness.waiting_time * self.people_manager.containers[None].count
 
     def evaluate(self, member: Member) -> None:
+        member.fitness = 0
         original_positions_of_elevators = [elevator.state.position for elevator in member.elevators]
         for move_index in range(self.settings.path.path_length):
             self.evaluate_move(member, move_index)
+
+        for elevator in member.elevators:
+            member.fitness += elevator.fitness
 
         # Rollback
         self.people_manager.rollback()
