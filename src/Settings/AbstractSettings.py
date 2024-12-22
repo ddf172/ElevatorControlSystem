@@ -8,6 +8,7 @@ class AbstractSettings(ABC):
         self.fitness = SettingsFitness()
         self.algorithm = SettingsAlgorithm()
         self.elevator = SettingsElevator()
+        self.system = SettingsSystem()
 
     def get_path_length(self):
         return self.path.path_length

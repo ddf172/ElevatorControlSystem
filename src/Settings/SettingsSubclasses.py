@@ -54,3 +54,11 @@ class SettingsElevator:
     def __init__(self):
         self.elevator_number = 3
         self.elevator_capacity = 5
+
+
+class SettingsSystem:
+    def __init__(self):
+        self.new_person_interval = 0
+        self.people_batch_size = 0
+        self.path_generation_interval = 5
+        self.runtime = 100

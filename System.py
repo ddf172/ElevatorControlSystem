@@ -8,14 +8,7 @@ from typing import List
 
 
 class System:
-    # Configuration
-    # 0 - never
-    new_person_in_moves = 0
-    how_many_people_at_once = 0
-    how_often_generate_new_path = 5
-    runtime = 100
-
-    def __init__(self, elevators: List[SystemElevator] =None, people: List[Person] = None):
+    def __init__(self, elevators: List[SystemElevator] = None, people: List[Person] = None):
 
         self.people_manager = SystemPeopleManager()
         self.settings = Settings()
@@ -66,7 +59,7 @@ class System:
                 for person_id in people_to_drop_ids:
                     self.people_manager.remove_person(people_to_drop[person_id], elevator_index)
 
-                self.transported_people += len(people_to_drop)
+                self.transported_people += len(people_to_drop_ids)
 
                 # Handle pick up
                 people_to_pick = self.people_manager.containers[None].floors[elevator.state.position]
@@ -81,13 +74,13 @@ class System:
         when_to_generate_path = 0
 
         self.make_path()
-        while self.runtime > 0:
-            self.runtime -= 1
+        while self.settings.system.runtime > 0:
+            self.settings.system.runtime -= 1
 
             # adding people in real time
             when_to_add_person += 1
-            if when_to_add_person == self.new_person_in_moves:
-                for i in range(self.how_many_people_at_once):
+            if when_to_add_person == self.settings.system.new_person_interval:
+                for i in range(self.settings.system.people_batch_size):
                     self.add_person()
 
                 self.make_path()
@@ -96,7 +89,7 @@ class System:
 
             # creating new path
             when_to_generate_path += 1
-            if when_to_generate_path == self.how_often_generate_new_path:
+            if when_to_generate_path == self.settings.system.path_generation_interval:
                 self.make_path()
                 when_to_generate_path = 0
 
