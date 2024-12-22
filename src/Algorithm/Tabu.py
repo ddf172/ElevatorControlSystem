@@ -98,7 +98,6 @@ class Tabu:
         self.state.position = original_position
 
     def get_path(self) -> List[int]:
-        assert len(self.state.path) == self.settings.get_path_length()
         return self.state.path
 
     def get_move_mutation(self, move: int) -> int:

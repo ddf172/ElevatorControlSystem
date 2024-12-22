@@ -68,7 +68,7 @@ class MemberEvaluator:
             self.handle_fitness(alg_elevator, 'pick_up')
 
         # Handle door movement
-        if (len(people_to_drop) + len(people_to_pick)) == 0:
+        if (len(people_to_drop_ids) + len(people_to_pick_ids)) == 0:
             self.handle_fitness(alg_elevator, 'useless_door_movement')
         else:
             self.handle_fitness(alg_elevator, 'door_movement')

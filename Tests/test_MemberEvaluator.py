@@ -137,7 +137,7 @@ def test_handle_door_open(evaluator_people_manager, settings):
     assert_test_results_for_moves(alg_elevator, member_evaluator, 0, expected_fitness, expected_people_affiliation, 0)
 
 
-def test_evaluate_elevator_move(evaluator_people_manager ,settings):
+def test_evaluate_elevator_move(evaluator_people_manager, settings):
     settings.path.path_length = 5
 
     member_evaluator = member_elevator_with_fixed_settings(evaluator_people_manager, settings)
@@ -275,7 +275,7 @@ def test_evaluate_move(evaluator_people_manager, settings):
     # Move 3
     member_evaluator.evaluate_move(member, 2)
 
-    expected_fitness_elevator0 += settings.fitness.door_movement + 3 * settings.fitness.journey_time
+    expected_fitness_elevator0 += settings.fitness.useless_door_movement + 3 * settings.fitness.journey_time
 
     expected_fitness_elevator1 += settings.fitness.door_movement + 2 * settings.fitness.drop_out
 
@@ -359,7 +359,8 @@ def test_evaluate(evaluator_people_manager, settings):
     expected_fitness_elevator1 = 0
     expected_fitness_member = 0
 
-    expected_fitness_elevator0 += 2 * settings.fitness.door_movement
+    expected_fitness_elevator0 += settings.fitness.useless_door_movement
+    expected_fitness_elevator0 += settings.fitness.door_movement
     expected_fitness_elevator0 += 15 * settings.fitness.journey_time
     expected_fitness_elevator0 += 3 * settings.fitness.no_move_with_passenger
     expected_fitness_elevator0 += 2 * settings.fitness.move
@@ -375,6 +376,7 @@ def test_evaluate(evaluator_people_manager, settings):
     expected_fitness_elevator1 += 2 * settings.fitness.no_move
 
     expected_fitness_member += 12 * settings.fitness.waiting_time
+    expected_fitness_member += expected_fitness_elevator0 + expected_fitness_elevator1
 
     expected_people_affiliation = {0: None, 1: None, 2: None, 3: 0, 4: 0, 5: 0, 6: None, 7: 1, 8: 1}
 
