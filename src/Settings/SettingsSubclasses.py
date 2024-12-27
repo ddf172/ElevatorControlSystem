@@ -62,3 +62,4 @@ class SettingsSystem:
         self.people_batch_size = 0
         self.path_generation_interval = 5
         self.runtime = 100
+        self.transported_people_track_number = 10

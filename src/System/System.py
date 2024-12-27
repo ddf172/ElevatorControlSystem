@@ -5,6 +5,7 @@ import random
 from src.Objects.Person import Person
 from src.Algorithm.Algorithm import Algorithm
 from typing import List
+from collections import deque
 
 
 class System:
@@ -12,8 +13,10 @@ class System:
 
         self.people_manager = SystemPeopleManager()
         self.settings = Settings()
-        self.transported_people = 0
+        self.transported_people = deque()
         self.elevators = elevators
+        self.people_adding_interval = 0
+        self.path_generation_interval = 0
 
         if elevators is None:
             for i in range(self.settings.elevator.elevator_number):
@@ -34,7 +37,12 @@ class System:
         self.people_manager.add_person(person, None)
 
     def remove_person(self, person, where) -> bool:
-        return self.people_manager.remove_person(person, where)
+        if self.people_manager.remove_person(person, where):
+            self.transported_people.append(person)
+            if len(self.transported_people) > self.settings.system.transported_people_track_number:
+                self.transported_people.popleft()
+            return True
+        return False
 
     def make_path(self) -> None:
         algorithm = Algorithm(self.elevators, self.people_manager)
@@ -43,7 +51,7 @@ class System:
         for elevator_index, elevator in enumerate(self.elevators):
             elevator.state.path = best_member.get_elevator(elevator_index).state.path
 
-    def make_move(self):
+    def apply_path_move(self):
         for elevator_index, elevator in enumerate(self.elevators):
             assert len(elevator.state.path) > 0
 
@@ -69,28 +77,33 @@ class System:
                         break
                     self.people_manager.move_person(people_to_pick[person_id], None, elevator_index)
 
-    def run_system(self):
-        when_to_add_person = 0
-        when_to_generate_path = 0
+    def handle_people_adding_interval(self):
+        self.people_adding_interval += 1
+        if self.people_adding_interval == self.settings.system.new_person_interval:
+            for i in range(self.settings.system.people_batch_size):
+                self.add_person()
+            self.people_adding_interval = 0
+            # path handling
+            self.make_path()
+            self.path_generation_interval = 0
 
+    def handle_path_generation_interval(self):
+        if not self.elevators[0].state.path:
+            self.make_path()
+            return
+
+        self.path_generation_interval += 1
+        if self.path_generation_interval == self.settings.system.path_generation_interval:
+            self.make_path()
+            self.path_generation_interval = 0
+
+    def make_move(self) -> None:
+        self.handle_people_adding_interval()
+        self.handle_path_generation_interval()
+        self.apply_path_move()
+
+    def run_system(self):
         self.make_path()
         while self.settings.system.runtime > 0:
             self.settings.system.runtime -= 1
-
-            # adding people in real time
-            when_to_add_person += 1
-            if when_to_add_person == self.settings.system.new_person_interval:
-                for i in range(self.settings.system.people_batch_size):
-                    self.add_person()
-
-                self.make_path()
-                when_to_generate_path = 0
-                when_to_add_person = 0
-
-            # creating new path
-            when_to_generate_path += 1
-            if when_to_generate_path == self.settings.system.path_generation_interval:
-                self.make_path()
-                when_to_generate_path = 0
-
             self.make_move()

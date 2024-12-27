@@ -1,5 +1,5 @@
 import tkinter as tk
-from System import System
+
 
 class Application(tk.Frame):
     
