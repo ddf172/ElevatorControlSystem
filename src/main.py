@@ -1,4 +1,4 @@
-from System import *
+from src.System import *
 
 elevators_data = [
     SystemElevator(position=0),
