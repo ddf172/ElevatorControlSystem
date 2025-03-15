@@ -80,14 +80,49 @@ class Algorithm:
         self.generate_population()
         iterations = self.settings.algorithm.iterations
 
-        while iterations > 0:
-            iterations -= 1
+        # Initialize fitness tracking
+        self.generation_metrics = {
+            'all_time_best': None,
+            'current_best': None,
+            'mean': None,
+            'worst': None
+        }
+
+        # Create history lists to track evolution across iterations
+        self.fitness_evolution = {
+            'all_time_best': [],
+            'current_best': [],
+            'mean': [],
+            'worst': []
+        }
+
+        for iteration in range(iterations):
             self.crossover_population()
             self.mutate_population()
             # self.validate_and_repair_population()
             self.evaluate_population()
             self.select_population()
             self.save_best_member()
-            # print(end - start, "one interation time, iterations left:", iterations, "best fitness: ", self.best_member.fitness)
+
+            # Calculate and store generation metrics
+            self.calculate_generation_metrics()
+
+            # Store current metrics in evolution history
+            self.fitness_evolution['all_time_best'].append(self.generation_metrics['all_time_best'])
+            self.fitness_evolution['current_best'].append(self.generation_metrics['current_best'])
+            self.fitness_evolution['mean'].append(self.generation_metrics['mean'])
+            self.fitness_evolution['worst'].append(self.generation_metrics['worst'])
 
         return self.best_member
+
+    def calculate_generation_metrics(self):
+        # Calculate and store metrics for current generation
+        fitness_values = [member.fitness for member in self.population]
+
+        self.generation_metrics['current_best'] = max(fitness_values) if fitness_values else 0
+        self.generation_metrics['mean'] = sum(fitness_values) / len(fitness_values) if fitness_values else 0
+        self.generation_metrics['worst'] = min(fitness_values) if fitness_values else 0
+
+        if self.generation_metrics['all_time_best'] is None or self.best_member.fitness > self.generation_metrics[
+            'all_time_best']:
+            self.generation_metrics['all_time_best'] = self.best_member.fitness

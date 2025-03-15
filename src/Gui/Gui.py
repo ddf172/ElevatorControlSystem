@@ -22,7 +22,12 @@ class ElevatorSystemGUI:
 
         # Initialize state trackers
         self.current_step = 0
-        self.fitness_history = []
+        self.fitness_history = {
+            'all_time_best': [],
+            'current_best': [],
+            'mean': [],
+            'worst': []
+        }
         self.path_history = {}
         self.elevator_colors = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6"]
         for i in range(len(self.system.elevators)):
@@ -216,7 +221,7 @@ class ElevatorSystemGUI:
         # Create matplotlib figure for fitness graph
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.fitness_plot = self.figure.add_subplot(111)
-        self.fitness_plot.set_title("Fitness History")
+        self.fitness_plot.set_title("Fitness Metrics Per Generation")
         self.fitness_plot.set_xlabel("Step")
         self.fitness_plot.set_ylabel("Fitness Value")
 
@@ -229,10 +234,25 @@ class ElevatorSystemGUI:
         self.current_stats_frame.pack(fill=tk.X, padx=5, pady=10)
 
         # Create stats labels
-        self.overall_fitness_label = ttk.Label(self.current_stats_frame,
-                                               text="Current Overall Fitness: N/A",
-                                               style="TLabel")
-        self.overall_fitness_label.pack(anchor=tk.W, pady=2)
+        self.all_time_best_label = ttk.Label(self.current_stats_frame,
+                                             text="All-time Best Fitness: N/A",
+                                             style="TLabel")
+        self.all_time_best_label.pack(anchor=tk.W, pady=2)
+
+        self.current_best_label = ttk.Label(self.current_stats_frame,
+                                            text="Current Best Fitness: N/A",
+                                            style="TLabel")
+        self.current_best_label.pack(anchor=tk.W, pady=2)
+
+        self.mean_fitness_label = ttk.Label(self.current_stats_frame,
+                                            text="Mean Fitness: N/A",
+                                            style="TLabel")
+        self.mean_fitness_label.pack(anchor=tk.W, pady=2)
+
+        self.worst_fitness_label = ttk.Label(self.current_stats_frame,
+                                             text="Worst Fitness: N/A",
+                                             style="TLabel")
+        self.worst_fitness_label.pack(anchor=tk.W, pady=2)
 
         # People waiting stats
         self.people_waiting_label = ttk.Label(self.current_stats_frame,
@@ -392,20 +412,38 @@ class ElevatorSystemGUI:
                                                  font=("Arial", 9, "bold"))
 
     def update_fitness_graph(self):
-        # Update fitness graph if we have history
-        if self.fitness_history:
+        # Check if we have an algorithm with evolution data
+        if hasattr(self.system, 'algorithm') and hasattr(self.system.algorithm, 'fitness_evolution'):
             self.fitness_plot.clear()
-            self.fitness_plot.plot(self.fitness_history, 'b-')
-            self.fitness_plot.set_title("Fitness History")
-            self.fitness_plot.set_xlabel("Step")
+
+            evolution = self.system.algorithm.fitness_evolution
+            iterations = range(len(evolution['all_time_best']))
+
+            # Plot each metric with different colors and labels
+            if evolution['all_time_best']:
+                self.fitness_plot.plot(iterations, evolution['all_time_best'], 'b-', label='All-time Best')
+            if evolution['current_best']:
+                self.fitness_plot.plot(iterations, evolution['current_best'], 'g-', label='Current Best')
+            if evolution['mean']:
+                self.fitness_plot.plot(iterations, evolution['mean'], 'y-', label='Mean')
+            if evolution['worst']:
+                self.fitness_plot.plot(iterations, evolution['worst'], 'r-', label='Worst')
+
+            self.fitness_plot.set_title("Fitness Evolution Across Iterations")
+            self.fitness_plot.set_xlabel("Iteration")
             self.fitness_plot.set_ylabel("Fitness Value")
+            self.fitness_plot.legend(loc='best')
 
             # Set reasonable y-limits
-            min_fitness = min(self.fitness_history) if self.fitness_history else 0
-            max_fitness = max(self.fitness_history) if self.fitness_history else 0
-            padding = max(abs(max_fitness - min_fitness) * 0.1, 10)
+            all_values = []
+            for metric_values in evolution.values():
+                all_values.extend([v for v in metric_values if v is not None])
 
-            self.fitness_plot.set_ylim(min_fitness - padding, max_fitness + padding)
+            if all_values:
+                min_fitness = min(all_values)
+                max_fitness = max(all_values)
+                padding = max(abs(max_fitness - min_fitness) * 0.1, 10)
+                self.fitness_plot.set_ylim(min_fitness - padding, max_fitness + padding)
 
             # Update canvas
             self.canvas.draw()
@@ -444,10 +482,22 @@ class ElevatorSystemGUI:
             self.steps_since_person_label.config(
                 text=f"Steps Since Last Person Added: {self.steps_since_last_person_added}")
 
-        # Update statistics
-        current_fitness = sum(elevator.fitness for elevator in self.system.elevators) if hasattr(
-            self.system.elevators[0], 'fitness') else "N/A"
-        self.overall_fitness_label.config(text=f"Current Overall Fitness: {current_fitness}")
+        # Update fitness statistics if available
+        if hasattr(self.system, 'algorithm') and hasattr(self.system.algorithm, 'generation_metrics'):
+            metrics = self.system.algorithm.generation_metrics
+
+            if metrics['all_time_best'] is not None:
+                self.all_time_best_label.config(text=f"All-time Best Fitness: {metrics['all_time_best']:.2f}")
+
+            if metrics['current_best'] is not None:
+                self.current_best_label.config(text=f"Current Best Fitness: {metrics['current_best']:.2f}")
+
+            if metrics['mean'] is not None:
+                self.mean_fitness_label.config(text=f"Mean Fitness: {metrics['mean']:.2f}")
+
+            if metrics['worst'] is not None:
+                self.worst_fitness_label.config(text=f"Worst Fitness: {metrics['worst']:.2f}")
+
         self.people_waiting_label.config(text=f"People Waiting: {self.system.people_manager.containers[None].count}")
 
     def update_display(self):
@@ -510,18 +560,13 @@ class ElevatorSystemGUI:
             self.check_and_add_people()
 
             # Check if paths need to be regenerated
-            self.check_and_regenerate_paths()
+            path_regenerated = self.check_and_regenerate_paths()
 
             try:
                 # Make a move
                 self.system.make_move()
 
-                # Record fitness
-                current_fitness = sum(elevator.fitness for elevator in self.system.elevators) if hasattr(
-                    self.system.elevators[0], 'fitness') else 0
-                self.fitness_history.append(current_fitness)
-
-                # Update paths history
+                # Update paths history (keep this part for elevator path visualization)
                 for i, elevator in enumerate(self.system.elevators):
                     if i in self.path_history:
                         self.path_history[i].append(elevator.state.path.copy() if elevator.state.path else [])
@@ -580,11 +625,12 @@ class ElevatorSystemGUI:
         # Reset system runtime
         self.system.settings.system.runtime = 100  # or whatever initial value
 
-        # Reset counters and history
+        # Reset counters
         self.current_step = 0
         self.steps_since_last_path_generation = 0
         self.steps_since_last_person_added = 0
-        self.fitness_history = []
+
+        # Reset path history
         for i in range(len(self.system.elevators)):
             self.path_history[i] = []
 

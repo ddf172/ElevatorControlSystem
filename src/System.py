@@ -10,6 +10,7 @@ from typing import List
 class System:
     def __init__(self, elevators: List[SystemElevator] = None, people: List[Person] = None):
 
+        self.algorithm = None
         self.people_manager = SystemPeopleManager()
         self.settings = Settings()
         self.transported_people = 0
@@ -37,9 +38,8 @@ class System:
         return self.people_manager.remove_person(person, where)
 
     def make_path(self) -> None:
-        algorithm = Algorithm(self.elevators, self.people_manager)
-        best_member = algorithm.run_algorithm()
-        print(best_member.fitness)
+        self.algorithm = Algorithm(self.elevators, self.people_manager)
+        best_member = self.algorithm.run_algorithm()
         for elevator_index, elevator in enumerate(self.elevators):
             elevator.state.path = best_member.get_elevator(elevator_index).state.path
 
