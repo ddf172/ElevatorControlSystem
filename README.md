@@ -66,7 +66,7 @@ The genetic algorithm optimizes elevator paths by:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/elevator-simulation.git
+git clone https://github.com/ddf172/ElevatorControlSystem.git
 cd elevator-simulation
 ```
 
