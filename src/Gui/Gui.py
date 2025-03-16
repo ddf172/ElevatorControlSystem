@@ -429,10 +429,12 @@ class ElevatorSystemGUI:
             if evolution['worst']:
                 self.fitness_plot.plot(iterations, evolution['worst'], 'r-', label='Worst')
 
+            self.figure.savefig('fitness_evolution.png')
             self.fitness_plot.set_title("Fitness Evolution Across Iterations")
             self.fitness_plot.set_xlabel("Iteration")
             self.fitness_plot.set_ylabel("Fitness Value")
             self.fitness_plot.legend(loc='best')
+
 
             # Set reasonable y-limits
             all_values = []
