@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: windy-app
+    image: elevator-simulation
     volumes:
       - ./:/app
     environment:
